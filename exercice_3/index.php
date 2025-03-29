@@ -1,442 +1,72 @@
+<?php
+require_once 'class.php'; 
+
+$pokemonList = [
+    new PokemonFeu("Salamèche", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png", 100, new AttackPokemon(10, 20, 2, 30)),
+    new PokemonEau("Carapuce", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png", 100, new AttackPokemon(12, 18, 1.5, 20)),
+    new PokemonPlante("Bulbizarre", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png", 100, new AttackPokemon(8, 16, 1.8, 25)),
+    new PokemonFeu("Dracaufeu", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png", 150, new AttackPokemon(25, 40, 3, 15)),
+    new PokemonEau("Squirtle", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10.png", 90, new AttackPokemon(15, 22, 1.6, 10)),
+    new PokemonPlante("Herbizarre", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/43.png", 110, new AttackPokemon(14, 22, 2, 20)),
+    new PokemonFeu("Reptincel", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/5.png", 120, new AttackPokemon(18, 28, 2.5, 18)),
+    new PokemonEau("Pikachu", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png", 100, new AttackPokemon(10, 30, 1.7, 30)),
+    new PokemonPlante("Chlorobule", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/46.png", 95, new AttackPokemon(12, 18, 1.5, 15)),
+    new PokemonFeu("Volcaropod", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/636.png", 140, new AttackPokemon(28, 35, 3.3, 40)),
+    new PokemonEau("Dracolosse", "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/149.png", 200, new AttackPokemon(30, 50, 3.5, 50)),
+];
+
+function getRandomPokemon() {
+    global $pokemonList;
+    $randomPokemons = array_rand($pokemonList, 2); // Choisit deux Pokémon au hasard
+    return [$pokemonList[$randomPokemons[0]], $pokemonList[$randomPokemons[1]]];
+}
+$list = getRandomPokemon();
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokémons</title>
+    <title>Combat Pokémon</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <?php
-    /**
-     * Classe représentant les caractéristiques d'attaque d'un Pokémon.
-     */
-    class AttackPokemon {
-        /**
-         * Attaque minimale du Pokémon.
-         * @var float
-         */
-        private float $attackMinimal;
 
-        /**
-         * Attaque maximale du Pokémon.
-         * @var float
-         */
-        private float $attackMaximal;
-
-        /**
-         * Coefficient multiplicateur pour l'attaque spéciale.
-         * @var float
-         */
-        private float $specialAttack;
-
-        /**
-         * Probabilité (en pourcentage) de déclencher une attaque spéciale.
-         * @var float
-         */
-        private float $probabilitySpecialAttack;
-
-        /**
-         * Constructeur de la classe AttackPokemon.
-         *
-         * @param float $attackMinimal Attaque minimale.
-         * @param float $attackMaximal Attaque maximale.
-         * @param float $specialAttack Coefficient de l'attaque spéciale.
-         * @param float $probabilitySpecialAttack Probabilité de l'attaque spéciale (en pourcentage).
-         */
-        public function __construct(float $attackMinimal, float $attackMaximal, float $specialAttack, float $probabilitySpecialAttack) {
-            $this->attackMinimal = $attackMinimal;
-            $this->attackMaximal = $attackMaximal;
-            $this->specialAttack = $specialAttack;
-            $this->probabilitySpecialAttack = $probabilitySpecialAttack;
-        }
-
-        /**
-         * Récupère l'attaque minimale.
-         *
-         * @return float L'attaque minimale.
-         */
-        public function getAttackMinimal(): float {
-            return $this->attackMinimal;
-        }
-
-        /**
-         * Récupère l'attaque maximale.
-         *
-         * @return float L'attaque maximale.
-         */
-        public function getAttackMaximal(): float {
-            return $this->attackMaximal;
-        }
-
-        /**
-         * Récupère le coefficient de l'attaque spéciale.
-         *
-         * @return float Le coefficient de l'attaque spéciale.
-         */
-        public function getSpecialAttack(): float {
-            return $this->specialAttack;
-        }
-
-        /**
-         * Récupère la probabilité de l'attaque spéciale.
-         *
-         * @return float La probabilité de l'attaque spéciale (en pourcentage).
-         */
-        public function getProbabilitySpecialAttack(): float {
-            return $this->probabilitySpecialAttack;
-        }
-
-        /**
-         * Modifie l'attaque minimale.
-         *
-         * @param float $attackMinimal La nouvelle attaque minimale.
-         * @return void
-         */
-        public function setAttackMinimal(float $attackMinimal): void {
-            $this->attackMinimal = $attackMinimal;
-        }
-
-        /**
-         * Modifie l'attaque maximale.
-         *
-         * @param float $attackMaximal La nouvelle attaque maximale.
-         * @return void
-         */
-        public function setAttackMaximal(float $attackMaximal): void {
-            $this->attackMaximal = $attackMaximal;
-        }
-
-        /**
-         * Modifie le coefficient de l'attaque spéciale.
-         *
-         * @param float $specialAttack Le nouveau coefficient de l'attaque spéciale.
-         * @return void
-         */
-        public function setSpecialAttack(float $specialAttack): void {
-            $this->specialAttack = $specialAttack;
-        }
-
-        /**
-         * Modifie la probabilité de l'attaque spéciale.
-         *
-         * @param float $probabilitySpecialAttack La nouvelle probabilité de l'attaque spéciale (en pourcentage).
-         * @return void
-         */
-        public function setProbabilitySpecialAttack(float $probabilitySpecialAttack): void {
-            $this->probabilitySpecialAttack = $probabilitySpecialAttack;
-        }
+<?php
+$pokemon1 = $list[0]; 
+$pokemon2 = $list[1]; 
+$round = 1;
+echo "<div class='battle-container'>";
+while (!$pokemon1->isDead() && !$pokemon2->isDead()) {
+    echo "<div class='round-container'>";
+    echo "<div class='pokemon-box'>";
+    echo "<img src='" . $pokemon1->getUrl() . "' alt='" . $pokemon1->getNom() . "'>";
+    echo "<h1><strong>" . $pokemon1->getNom() . "</strong> (" . $pokemon1->getType() . ")</h1>";
+    echo "<h3>HP: " . round($pokemon1->getHp(), 2) . "</h3>";
+    echo "<hr>";
+    echo "<p>" . $pokemon1->whoAmI() . "</p>";
+    echo "</div>";
+    echo "<div class='round-number'>Round $round</div>";
+    echo "<div class='pokemon-box'>";
+    echo "<img src='" . $pokemon2->getUrl() . "' alt='" . $pokemon2->getNom() . "'>";
+    echo "<h1><strong>" . $pokemon2->getNom() . "</strong> (" . $pokemon2->getType() . ")</h1>";
+    echo "<h3>HP: " . round($pokemon2->getHp(), 2) . "</h3>";
+    echo "<hr>";
+    echo "<p>" . $pokemon2->whoAmI() . "</p>";
+    echo "</div>";
+    echo "</div>";
+    $pokemon1->attack($pokemon2);
+    if (!$pokemon2->isDead()) {
+        $pokemon2->attack($pokemon1);
     }
-//----------------------------------------------------------------------------------------------------------------------
+    $round++;
+    echo "<hr>";
+}
 
+$winner = $pokemon1->isDead() ? $pokemon2 : $pokemon1;
+echo "<h2 class='declare-winner'>🏆 Vainqueur: " . $winner->getNom() . "!</h2><img src='" . $winner->getUrl() . "' alt='" . $pokemon2->getNom() . "'>";
+echo "</div>"; 
+?>
 
-    /**
-     * Classe de base représentant un Pokémon.
-     */
-    class Pokemon{
-        /**
-         * Nom du Pokémon.
-         * @var string
-         */
-        private string $nom;
-
-        /**
-         * URL de l'image du Pokémon.
-         * @var string
-         */
-        private string $url;
-
-        /**
-         * Points de vie (HP) du Pokémon.
-         * @var float
-         */
-        private float $hp;
-
-        /**
-         * Objet AttackPokemon contenant les caractéristiques d'attaque du Pokémon.
-         * @var AttackPokemon
-         */
-        private AttackPokemon $attackpokemon;
-
-        /**
-         * Type du Pokémon (par défaut 'Normal').
-         * @var string
-         */
-        protected string $type = 'Normal';
-
-        /**
-         * Constructeur de la classe Pokemon.
-         *
-         * @param string $nom Nom du Pokémon.
-         * @param string $url URL de l'image du Pokémon.
-         * @param float $hp Points de vie du Pokémon.
-         * @param AttackPokemon $attackpokemon Objet AttackPokemon du Pokémon.
-         * @param string $type Type du Pokémon (optionnel, par défaut 'Normal').
-         */
-        public function __construct(string $nom, string $url, float $hp, AttackPokemon $attackpokemon, string $type = 'Normal') {
-            $this->nom = $nom;
-            $this->url = $url;
-            $this->hp = $hp;
-            $this->attackpokemon = $attackpokemon;
-            $this->type = $type;
-        }
-
-        /**
-         * Récupère le nom du Pokémon.
-         *
-         * @return string Le nom du Pokémon.
-         */
-        public function getNom(): string {
-            return $this->nom;
-        }
-
-        /**
-         * Récupère l'URL de l'image du Pokémon.
-         *
-         * @return string L'URL de l'image du Pokémon.
-         */
-        public function getUrl(): string {
-            return $this->url;
-        }
-
-        /**
-         * Récupère les points de vie du Pokémon.
-         *
-         * @return float Les points de vie du Pokémon.
-         */
-        public function getHp(): float {
-            return $this->hp;
-        }
-
-        /**
-         * Récupère l'objet AttackPokemon du Pokémon.
-         *
-         * @return AttackPokemon L'objet AttackPokemon.
-         */
-        public function getAttackPokemon(): AttackPokemon {
-            return $this->attackpokemon;
-        }
-
-        /**
-         * Récupère le type du Pokémon.
-         *
-         * @return string Le type du Pokémon.
-         */
-        public function getType(): string {
-            return $this->type;
-        }
-
-        /**
-         * Modifie le nom du Pokémon.
-         *
-         * @param string $nom Le nouveau nom du Pokémon.
-         * @return void
-         */
-        public function setNom(string $nom): void {
-            $this->nom = $nom;
-        }
-
-        /**
-         * Modifie l'URL de l'image du Pokémon.
-         *
-         * @param string $url La nouvelle URL de l'image du Pokémon.
-         * @return void
-         */
-        public function setUrl(string $url): void {
-            $this->url = $url;
-        }
-
-        /**
-         * Modifie les points de vie du Pokémon.
-         *
-         * @param float $hp Les nouveaux points de vie du Pokémon.
-         * @return void
-         */
-        public function setHp(float $hp): void {
-            $this->hp = $hp;
-        }
-
-        /**
-         * Modifie l'objet AttackPokemon du Pokémon.
-         *
-         * @param AttackPokemon $attackpokemon Le nouvel objet AttackPokemon.
-         * @return void
-         */
-        public function setAttackPokemon(AttackPokemon $attackpokemon): void {
-            $this->attackpokemon = $attackpokemon;
-        }
-
-        /**
-         * Modifie le type du Pokémon.
-         *
-         * @param string $type Le nouveau type du Pokémon.
-         * @return void
-         */
-        public function setType(string $type): void {
-            $this->type = $type;
-        }
-
-        /**
-         * Vérifie si le Pokémon est K.O.
-         *
-         * @return bool True si les HP sont inférieurs ou égaux à 0, false sinon.
-         */
-        public function isDead(): bool {
-            return $this->hp <= 0;
-        }
-
-        /**
-         * Effectue une attaque sur un autre Pokémon.
-         *
-         * @param Pokemon $pokemon Le Pokémon à attaquer.
-         * @return void
-         */
-        public function attack(Pokemon $pokemon): void {
-            // Calcule les dégâts de l'attaque de base
-            $attack = rand($this->attackpokemon->getAttackMinimal(), $this->attackpokemon->getAttackMaximal());
-            $specialAttack = false;
-
-            // Vérifie si une attaque spéciale se déclenche
-            if (rand(0, 100) < $this->attackpokemon->getProbabilitySpecialAttack()) {
-                $attack *= $this->attackpokemon->getSpecialAttack();
-                $specialAttack = true;
-            }
-
-            // Obtient l'efficacité du type de l'attaquant contre le type du défenseur
-            $typeEffectiveness = $this->getTypeEffectiveness($pokemon->getPokemonType());
-            // Calcule les dégâts finaux
-            $damage = $attack * $typeEffectiveness;
-            // Applique les dégâts au Pokémon attaqué
-            $pokemon->setHp($pokemon->getHp() - $damage);
-
-            // Affiche le résultat de l'attaque
-            echo $this->nom . " (" . $this->getType() . ") attaque " . $pokemon->getNom() . " (" . $pokemon->getType() . ") et inflige " . round($damage, 2) . " points de dégâts.";
-            if ($specialAttack) {
-                echo " (Attaque spéciale !)";
-            }
-            if ($typeEffectiveness > 1) {
-                echo " (C'est super efficace !)";
-            } elseif ($typeEffectiveness < 1 && $typeEffectiveness > 0) {
-                echo " (Ce n'est pas très efficace...)";
-            } elseif ($typeEffectiveness === 0) {
-                echo " (Aucun effet...)";
-            }
-            echo "<br>";
-        }
-
-        /**
-         * Récupère le type du Pokémon (pour usage interne).
-         *
-         * @return string Le type du Pokémon.
-         */
-        protected function getPokemonType(): string {
-            return $this->type;
-        }
-
-        /**
-         * Détermine l'efficacité du type de l'attaquant contre le type du défenseur.
-         *
-         * @param string $targetType Le type du Pokémon défenseur.
-         * @return float Le multiplicateur d'efficacité (2.0 = super efficace, 0.5 = pas très efficace, 0 = aucun effet, 1.0 = normal).
-         */
-        protected function getTypeEffectiveness(string $targetType): float {
-            if ($this->type === 'Feu') {
-                if ($targetType === 'Plante') return 2.0;
-                if ($targetType === 'Eau' || $targetType === 'Feu') return 0.5;
-            } elseif ($this->type === 'Eau') {
-                if ($targetType === 'Feu') return 2.0;
-                if ($targetType === 'Eau' || $targetType === 'Plante') return 0.5;
-            } elseif ($this->type === 'Plante') {
-                if ($targetType === 'Eau') return 2.0;
-                if ($targetType === 'Plante' || $targetType === 'Feu') return 0.5;
-            }
-            return 1.0; // Dégâts normaux pour les autres types (y compris Normal)
-        }
-
-        /**
-         * Affiche les informations du Pokémon.
-         *
-         * @return void
-         */
-        public function whoAmI(): void {
-            echo "Je suis le poKémon" . "<br>";
-            echo "Nom: " . $this->nom . "<br>";
-            echo "URL: " . $this->url . "<br>";
-            echo "HP: " . $this->hp . "<br>";
-            echo "Attaque Minimale: " . $this->attackpokemon->getAttackMinimal() . "<br>";
-            echo "Attaque Maximale: " . $this->attackpokemon->getAttackMaximal() . "<br>";
-            echo "Coefficient Attaque Spéciale: " . $this->attackpokemon->getSpecialAttack() . "<br>";
-            echo "Probabilité Attaque Spéciale: " . $this->attackpokemon->getProbabilitySpecialAttack() . "%<br><br>";
-        }
-    }
-
-    /**
-     * Classe représentant un Pokémon de type Feu, héritant de la classe Pokemon.
-     */
-    class PokemonFeu extends Pokemon {
-        /**
-         * Le type spécifique de ce Pokémon.
-         * @var string
-         */
-        protected string $type = 'Feu';
-
-        /**
-         * Constructeur de la classe PokemonFeu.
-         *
-         * @param string $nom Nom du Pokémon.
-         * @param string $url URL de l'image du Pokémon.
-         * @param float $hp Points de vie du Pokémon.
-         * @param AttackPokemon $attackpokemon Objet AttackPokemon du Pokémon.
-         */
-        public function __construct(string $nom, string $url, float $hp, AttackPokemon $attackpokemon) {
-            parent::__construct($nom, $url, $hp, $attackpokemon, 'Feu');
-        }
-    }
-
-    /**
-     * Classe représentant un Pokémon de type Eau, héritant de la classe Pokemon.
-     */
-    class PokemonEau extends Pokemon {
-        /**
-         * Le type spécifique de ce Pokémon.
-         * @var string
-         */
-        protected string $type = 'Eau';
-
-        /**
-         * Constructeur de la classe PokemonEau.
-         *
-         * @param string $nom Nom du Pokémon.
-         * @param string $url URL de l'image du Pokémon.
-         * @param float $hp Points de vie du Pokémon.
-         * @param AttackPokemon $attackpokemon Objet AttackPokemon du Pokémon.
-         */
-        public function __construct(string $nom, string $url, float $hp, AttackPokemon $attackpokemon) {
-            parent::__construct($nom, $url, $hp, $attackpokemon, 'Eau');
-        }
-    }
-
-    /**
-     * Classe représentant un Pokémon de type Plante, héritant de la classe Pokemon.
-     */
-    class PokemonPlante extends Pokemon {
-        /**
-         * Le type spécifique de ce Pokémon.
-         * @var string
-         */
-        protected string $type = 'Plante';
-
-        /**
-         * Constructeur de la classe PokemonPlante.
-         *
-         * @param string $nom Nom du Pokémon.
-         * @param string $url URL de l'image du Pokémon.
-         * @param float $hp Points de vie du Pokémon.
-         * @param AttackPokemon $attackpokemon Objet AttackPokemon du Pokémon.
-         */
-        public function __construct(string $nom, string $url, float $hp, AttackPokemon $attackpokemon) {
-            parent::__construct($nom, $url, $hp, $attackpokemon, 'Plante');
-        }
-    }
-    ?>
 </body>
 </html>

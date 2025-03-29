@@ -1,0 +1,150 @@
+body {
+    background-color: #f0f4f8;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    margin-top: 50px;
+}
+h3 {
+    font-size: 25px;
+    font-weight: bold;
+    color: #d23838;
+    text-align: center;
+}
+.round-number {
+    font-size: 32px;
+    font-weight: bold;
+    color: #343a40;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.pokemon-box {
+    width: 30%;
+    height: 500px;
+    background-color: #cffdb0;
+    background-size: cover;
+    background-position: center;
+    border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 1);
+    margin: 20px;
+    padding: 20px;
+    text-align: center;
+}
+
+.pokemon-box img {
+    width: 100%; 
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0%;
+    size: 130%;
+}
+
+.pokemon-box h5 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+.who-am-i {
+    font-size: 14px;
+    color: #f3240d;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.attack-info {
+    font-size: 14px;
+    color: #495057;
+    text-align: left;
+}
+
+.combat-outcome {
+    font-size: 18px;
+    font-weight: bold;
+    color: #007bff;
+    text-align: center;
+    margin-top: 30px;
+}
+
+button {
+    padding: 12px 40px;
+    font-size: 18px;
+    background-color: #28a745;
+    border: none;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #218838;
+    box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+}
+
+.round-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.round-container .pokemon-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.round-container .pokemon-box img {
+    width: 200px; 
+    height: 200px;
+}
+
+.round-container .pokemon-box .who-am-i, .round-container .pokemon-box .attack-info {
+    text-align: left;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.round-number {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.attack-info, .declare-winner {
+    text-align: center;
+    font-size: 25px; 
+    font-weight: bold;
+    color: #ff6600;
+    margin: 20px 0;
+}
+
+hr {
+    width: 90%;
+    border: 1px solid #ccc;
+    margin: 20px 0;
+}
+@media (max-width: 768px) {
+    .round-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .pokemon-box {
+        width: 80%;
+        margin-bottom: 20px;
+    }
+
+    .round-number {
+        font-size: 28px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+    }
+}
