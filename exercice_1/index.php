@@ -17,6 +17,19 @@
             $this->nom = $nom;
             $this->notes = $notes;
         }
+                public function getNom() {
+            return $this->nom;
+        }
+        public function getNotes() {
+            return $this->notes;
+        }
+        public function setNom($nom) {
+            $this->nom = $nom;
+        }
+        public function setNotes($notes) {
+            $this->notes = $notes;
+        }
+        
         public function affichernotes(){
             echo "<h3>Les notes de l'étudiant {$this->nom} sont :</h3>";
             echo "<ul>";
