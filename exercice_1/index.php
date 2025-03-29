@@ -9,14 +9,7 @@
     <?php
 
     class Etudiant{
-        private $nom;
-        private $notes;
-
-
-        public function __construct($nom, $notes) {
-            $this->nom = $nom;
-            $this->notes = $notes;
-        }
+        public function __construct( private string $nom, private $notes) {}
                 public function getNom() {
             return $this->nom;
         }
