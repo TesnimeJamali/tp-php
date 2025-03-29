@@ -1,0 +1,39 @@
+
+h1 {
+    font-size: 2rem;
+    color: #343a40;
+}
+.table {
+    background-color: #cbdef1;
+}
+
+body {
+    background-color: #f1f1f1;
+    padding: 20px;
+}
+
+.table tbody tr:hover {
+    background-color: #a5c9ed;
+}
+/* Adjust the column widths and center text */
+th, td {
+    text-align: center; /* Center the content */
+}
+
+
+/* Adjust the column widths and center text */
+th, td {
+    text-align: center; /* Center the content */
+}
+
+th:nth-child(1), td:nth-child(1) {
+    width: 30%; /* Smaller width for ID */
+}
+
+th:nth-child(2), td:nth-child(2) {
+    width: 40%; /* Smaller width for Name */
+}
+
+th:nth-child(3), td:nth-child(3) {
+    width: 30%; /* Smaller width for Date */
+}
