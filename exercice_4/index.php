@@ -23,6 +23,7 @@ $results = $query->fetchAll(PDO::FETCH_OBJ);
                     <th>ID</th>
                     <th>Nom</th>
                     <th>Date de Naissance</th>
+                    <th>Détails <i class="bi bi-info-circle-fill"></i> </th>
                 </tr>
             </thead>
             <tbody>
@@ -31,6 +32,7 @@ $results = $query->fetchAll(PDO::FETCH_OBJ);
                         <td><?php echo htmlspecialchars($student->id); ?></td>
                         <td><?php echo htmlspecialchars($student->name); ?></td>
                         <td><?php echo htmlspecialchars($student->birth_date); ?></td>
+                        <td><a href="detailEtudiant.php?id=<?php echo htmlspecialchars($student->id); ?>" class="btn btn-info btn-sm">Détails <i class="bi bi-info-circle-fill"></i> </a></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
