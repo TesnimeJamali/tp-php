@@ -422,6 +422,7 @@
          */
         public function __construct(string $nom, string $url, float $hp, AttackPokemon $attackpokemon) {
             parent::__construct($nom, $url, $hp, $attackpokemon, 'Plante');
+      
         }
     }
     ?>
