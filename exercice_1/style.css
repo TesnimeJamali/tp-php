@@ -1,0 +1,34 @@
+/* style.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 900px;
+    margin-top: 30px;
+}
+
+h3 {
+    margin-top: 20px;
+}
+
+.list-group-item {
+    font-weight: bold;
+    text-align: center;
+}
+
+.red {
+    background-color: #ff6464;
+    color: rgb(0, 0, 0);
+}
+
+.green {
+    background-color: #91c483;
+    color: rgb(0, 0, 0);
+}
+
+.orange {
+    background-color: #ffe162;
+    color: rgb(0, 0, 0);
+}

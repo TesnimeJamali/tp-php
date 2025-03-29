@@ -4,13 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Résultats des étudiants</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="container">
+    <h1 class="text-center mb-4">Résultats des Étudiants</h1>
+    <div class="row">
     <?php
-
     class Etudiant{
         public function __construct( private string $nom, private $notes) {}
-                public function getNom() {
+        public function getNom() {
             return $this->nom;
         }
         public function getNotes() {
@@ -23,49 +27,48 @@
             $this->notes = $notes;
         }
         
-        public function affichernotes(){
-            echo "<h3>Les notes de l'étudiant {$this->nom} sont :</h3>";
-            echo "<ul>";
+        public function affichernotes(): void {
+            echo "<div class='card mt-3'>";
+            echo "<div class='card-header bg-primary text-white text-center'><h3>{$this->nom}</h3></div>";
+            echo "<ul class='list-group list-group-flush'>";
+
             foreach ($this->notes as $note) {
-                $style = '';
-                if ($note < 10) {
-                    $style = 'background-color: red; color: white; padding: 5px; display: inline-block; margin-right: 5px;';
-                } elseif ($note > 10) {
-                    $style = 'background-color: green; color: white; padding: 5px; display: inline-block; margin-right: 5px;';
-                } else {
-                    $style = 'background-color: orange; color: white; padding: 5px; display: inline-block; margin-right: 5px;';
-                }
-                echo "<li style='" . $style . "'>" . $note . "</li>";
+                $class = ($note < 10) ? "red" : (($note == 10) ? "orange" : "green");
+                echo "<li class='list-group-item $class'>$note</li>";
             }
-            echo "</ul>";
-            }
-        public function calculerMoyenne() {
-                $somme = 0;
-                foreach ($this->notes as $note) {
-                    $somme += $note;
-                }
-                return $somme / count($this->notes);
-            }
-        public function afficher_résultat() {
+
+            echo "</ul></div>";
+        }
+
+        public function calculerMoyenne(): float {
+            return array_sum($this->notes) / count($this->notes);
+        }
+
+        public function afficher_résultat(): void {
             $moyenne = $this->calculerMoyenne();
-            if ($moyenne < 10) {
-                echo "<h3 style='color: red;'>L'étudiant {$this->nom} a échoué avec une moyenne de " . number_format($moyenne, 2) . "</h3>";
-            } elseif ($moyenne > 10) {
-                echo "<h3 style='color: green;'>L'étudiant {$this->nom} a réussi avec une moyenne de " . number_format($moyenne, 2) . "</h3>";
-            } else {
-                echo "<h3 style='color: orange;'>L'étudiant {$this->nom} a une moyenne de " . number_format($moyenne, 2) . "</h3>";
-            }
+            $class = ($moyenne < 10) ? "text-danger" : (($moyenne == 10) ? "text-warning" : "text-success");
+
+            echo "<h3 class='$class text-center mt-2'>Moyenne : " . number_format($moyenne, 2) . "</h3>";
         }
     }
-
-    $etudiant1 = new Etudiant("Aymen", [11, 13, 18, 7, 10, 13, 2, 5, 1]);
-    $etudiant2 = new Etudiant("Skander", [15, 9, 8, 16]);
-    $etudiant1->affichernotes();
-    $etudiant1->afficher_résultat();
-    echo "<hr>";
-    $etudiant2->affichernotes();
-    $etudiant2->afficher_résultat();
-
+    $etudiants = [
+        new Etudiant("Aymen", [11, 13, 18, 7, 10, 13, 2, 5, 1]),
+        new Etudiant("Skander", [15, 9, 8, 16]),
+        new Etudiant("Sarah", [14, 12, 10, 19, 17]),
+        new Etudiant("Omar", [5, 6, 8, 9, 10])
+    ];
+    // pour afficher chaque 2 etudiants dans une ligne
+    foreach ($etudiants as $index => $etudiant) {
+        echo "<div class='col-md-6'>";
+        $etudiant->affichernotes();
+        $etudiant->afficher_résultat();
+        echo "</div>";
+        if (($index + 1) % 2 == 0) {
+            echo "</div><div class='row'>";
+        }
+    }
     ?>
+    </div>
+</div>
 </body>
 </html>
