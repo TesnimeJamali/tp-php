@@ -6,9 +6,17 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $studentId = intval($_GET['id']); // Récupérer et sécuriser l'ID
 
     $db = ConnexionBD::getInstance();
+
+    // Préparer la requête SQL avec un placeholder pour l'ID
     $stmt = $db->prepare("SELECT id, name, birth_date FROM student WHERE id = :id");
+
+    // Lier la valeur de l'ID au placeholder
     $stmt->bindParam(':id', $studentId, PDO::PARAM_INT);
+
+    // Exécuter la requête préparée
     $stmt->execute();
+
+    // Récupérer l'étudiant
     $student = $stmt->fetch(PDO::FETCH_OBJ);
 
     if ($student) {
