@@ -4,7 +4,10 @@ session_start();
 include('db.php');  // Database connection
 include('sectionclass.php');  // Section class
 include('isAuthenticated.php'); // Vérification de l'authentification de l'utilisateur
-
+if ($_SESSION['role']=='user') {
+    header('Location: login.php');
+    exit();
+}
 // Create Section object
 $sectionObj = new Section($conn);
 
@@ -44,5 +47,7 @@ $sections = $sectionObj->getAllSections();
 
     <br>
     <a href="create_section.php">Ajouter une nouvelle section</a>
+    <a href="admin_dash.php">Retour à l'administration</a>
+
 </body>
 </html>

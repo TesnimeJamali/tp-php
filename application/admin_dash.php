@@ -2,6 +2,10 @@
 session_start();
 include('db.php'); // Connexion à la base de données
 include('isAuthenticated.php'); // Vérification de l'authentification de l'utilisateur
+if ($_SESSION['role']=='user') {
+    header('Location: login.php');
+    exit();
+}
 try {
     // Récupérer tous les étudiants de la base de données
     $stmt = $conn->prepare("SELECT * FROM etudiant");
@@ -63,7 +67,7 @@ try {
             <?php endif; ?>
         </td>
         <td>
-    <a href="section.php?id=<?= htmlspecialchars($etudiant['section']) ?>">
+    <a href="save.php?id=<?= htmlspecialchars($etudiant['section']) ?>">
         <?= htmlspecialchars($etudiant['section']) ?>
     </a>
 </td>
@@ -73,6 +77,7 @@ try {
 </table>
 <a href="logout.php"><button>Logout</button></a>
 <a href="student.php"><button>Edit Students</button></a>
+<a href="section.php"><button>Edit Sections</button></a>
 
 </body>
 </html>

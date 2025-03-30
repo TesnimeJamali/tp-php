@@ -3,7 +3,10 @@
 session_start();
 include('db.php');  // Database connection
 include('studentclass.php');  // Section class
-
+if ($_SESSION['role']=='user') {
+    header('Location: login.php');
+    exit();
+}
 // Create Section object
 $studentObj = new Student($conn);
 

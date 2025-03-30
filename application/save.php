@@ -36,7 +36,7 @@ try {
 <h2><?= htmlspecialchars($section['designation']) ?></h2>
 <p><?= nl2br(htmlspecialchars($section['description'])) ?></p>
 
-<a href="admin.php">Retour</a> <!-- Change en "user.php" si l'utilisateur est normal -->
+<a href="admin_dash.php">Retour</a> <!-- Change en "user.php" si l'utilisateur est normal -->
 
 </body>
 </html>
