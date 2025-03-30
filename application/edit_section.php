@@ -2,7 +2,10 @@
 session_start();
 include('db.php');
 include('sectionclass.php');
-
+if ($_SESSION['role']=='user') {
+    header('Location: login.php');
+    exit();
+}
 $error = '';
 
 // Ensure the section ID is provided
@@ -27,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = $_POST['description'];
 
     if ($sectionObj->updateSection($sectionId, $designation, $description)) {
-        header("Location: admin_dash.php");  // Redirect to admin dashboard after update
+        header("Location: section.php");  // Redirect to admin dashboard after update
         exit();
     } else {
         $error = "Erreur lors de la mise à jour de la section.";
@@ -57,6 +60,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="submit" value="Mettre à jour la section">
     </form>
     <br>
-    <a href="section.php">Retour à l'administration</a>
+    <a href="admin_dash.php">Retour à l'administration</a>
 </body>
 </html>

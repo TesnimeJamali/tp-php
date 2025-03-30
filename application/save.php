@@ -1,7 +1,10 @@
 <?php
 session_start();
 include('db.php'); // Connexion à la base de données
-
+if ($_SESSION['role']=='user') {
+    header('Location: login.php');
+    exit();
+}
 // Vérifier si l'ID de la section est passé en paramètre
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     die("ID de section manquant !");

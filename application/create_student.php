@@ -1,8 +1,12 @@
 <?php
+
 session_start();
 include('db.php');
 include('studentclass.php');
-
+if ($_SESSION['role']=='user') {
+    header('Location: login.php');
+    exit();
+}
 $error = '';
 
 // Créer un objet Student pour manipuler la base de données
@@ -14,24 +18,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $birthday = $_POST['birthday'];
     $section = $_POST['section'];
-
-    // Gestion de l'image (si elle est fournie)
     $image = null;  // Initialiser la variable image
 
     if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
         $imageName = $_FILES['image']['name'];
         $imageTmp = $_FILES['image']['tmp_name'];
-        $imagePath = 'uploads/' . basename($imageName);
-        
-        // Déplacer l'image dans le dossier "uploads"
-        if (move_uploaded_file($imageTmp, $imagePath)) {
-            $image = $imageName;  // Mettre à jour le nom de l'image si l'upload est réussi
-        } else {
-            $error = "Erreur lors de l'upload de l'image.";
-        }
+        $imagePath =$imageName;
+        $image = $imageName;  // Mettre à jour le nom de l'image si le téléchargement est réussi
     }
 
-    // Ajouter l'étudiant dans la base de données
     if ($studentObj->createStudent($name, $birthday, $image, $section)) {
         header("Location: student.php");  // Rediriger vers le tableau de bord après ajout
         exit();
@@ -62,7 +57,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="date" id="birthday" name="birthday" required><br><br>
 
         <label for="section">Section:</label>
-        <input type="text" id="section" name="section" required><br><br>
+<select id="section" name="section" required>
+    <?php
+    // Assuming you have a Section class that handles section-related queries
+    include('sectionclass.php');  // Include the Section class file
+    $sectionObj = new Section($conn);  // Create a Section object
+    $sections = $sectionObj->getAllSections();  // Fetch all available sections from the database
+
+    // Loop through the sections and create an option for each one
+    foreach ($sections as $section) {
+        echo '<option value="' . htmlspecialchars($section['id']) . '">' . htmlspecialchars($section['designation']) . '</option>';
+    }
+    ?>
+</select><br><br>
 
         <label for="image">Image (facultatif):</label>
         <input type="file" id="image" name="image"><br><br>

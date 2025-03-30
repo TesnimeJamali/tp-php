@@ -61,7 +61,7 @@ try {
         <td><?= htmlspecialchars($etudiant['birthday']) ?></td>
         <td>
             <?php if (!empty($etudiant['image'])): ?>
-                <img src="uploads/<?= htmlspecialchars($etudiant['image']) ?>" alt="Photo">
+                <img src="<?= htmlspecialchars($etudiant['image']) ?>" alt="Photo">
             <?php else: ?>
                 Aucun
             <?php endif; ?>
@@ -75,9 +75,9 @@ try {
     </tr>
     <?php endforeach; ?>
 </table>
-<a href="logout.php"><button>Logout</button></a>
-<a href="student.php"><button>Edit Students</button></a>
-<a href="section.php"><button>Edit Sections</button></a>
+<a href="logout.php"><button>Déconnecter</button></a>
+<a href="student.php"><button>Modifier Etudiants</button></a>
+<a href="section.php"><button>Modifier Sections</button></a>
 
 </body>
 </html>

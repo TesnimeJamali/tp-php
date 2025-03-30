@@ -2,7 +2,10 @@
 session_start();
 include('db.php');
 include('studentclass.php');
-
+if ($_SESSION['role']=='user') {
+    header('Location: login.php');
+    exit();
+}
 // Ensure the section ID is provided
 if (!isset($_GET['id'])) {
     die("ID de l'etudiant manquant !");

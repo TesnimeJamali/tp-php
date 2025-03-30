@@ -2,7 +2,10 @@
 session_start();
 include('db.php');
 include('sectionclass.php');
-
+if ($_SESSION['role']=='user') {
+    header('Location: login.php');
+    exit();
+}
 $error = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

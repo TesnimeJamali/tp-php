@@ -2,7 +2,10 @@
 session_start();
 include('db.php');
 include('studentclass.php');
-
+if ($_SESSION['role']=='user') {
+    header('Location: login.php');
+    exit();
+}
 $error = '';
 
 // Ensure the student ID is provided
@@ -32,20 +35,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
         $imageName = $_FILES['image']['name'];
         $imageTmp = $_FILES['image']['tmp_name'];
-        $imagePath = 'uploads/' . basename($imageName);
-        
-        // Move the uploaded image to the uploads directory
-        if (move_uploaded_file($imageTmp, $imagePath)) {
-            $image = $imageName;  // Update image name if upload is successful
-        } else {
-            $error = "Erreur lors de l'upload de l'image.";
-        }
+        $imagePath = $imageName;
+        $image = $imageName;  // Update the image name if a new one is uploaded
+    
     }
 
     // Update the student details
     if (empty($error)) {
         if ($studentObj->updateStudent($studentId, $name, $birthday, $section, $image)) {
-            header("Location: admin_dash.php");  // Redirect to admin dashboard after update
+            header("Location: student.php");  // Redirect to admin dashboard after update
             exit();
         } else {
             $error = "Erreur lors de la mise à jour de l'étudiant.";
@@ -81,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <?php if ($student['image']): ?>
             <p>Image actuelle:</p>
-            <img src="uploads/<?= htmlspecialchars($student['image']) ?>" width="100" alt="Current Image"><br><br>
+            <img src="<?=$student['image'] ?>" width="100" alt="Current Image"><br><br>
         <?php endif; ?>
 
         <input type="submit" value="Mettre à jour l'étudiant">

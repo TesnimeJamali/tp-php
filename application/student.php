@@ -35,7 +35,13 @@ $students = $studentObj->getAllStudents();
             <tr>
                 <td><?= $student['name'] ?></td>
                 <td><?= htmlspecialchars($student['birthday']) ?></td>
-                <td><?= htmlspecialchars($student['image']) ?></td>
+                <td>
+            <?php if (!empty($student['image'])): ?>
+                <img src="<?= htmlspecialchars($student['image']) ?>" alt="Photo">
+            <?php else: ?>
+                Aucun
+            <?php endif; ?>
+        </td>
                 <td><?= htmlspecialchars($student['section']) ?></td>
                 <td>
                     <a href="edit_student.php?id=<?= $student['id'] ?>">Modifier</a> |
