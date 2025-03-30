@@ -2,25 +2,20 @@
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get user input from the form
     $db_host = 'localhost';
     $db_user = $_POST['db_user'];
     $db_pass = $_POST['db_pass'];
-    $db_name = 'school_db'; // The name of the database to be created
+    $db_name = 'school_db'; 
 
     try {
-        // Step 1: Connect to MySQL using the provided user credentials
         $conn = new PDO("mysql:host=$db_host", $db_user, $db_pass);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Set error mode to exceptions
 
-        // Step 2: Create the database if it doesn't exist
         $sql = "CREATE DATABASE IF NOT EXISTS $db_name";
         $conn->exec($sql); // Execute the query
 
-        // Step 3: Select the database
         $conn->exec("USE $db_name");
 
-        // Step 4: Create the table if it doesn't exist
         $sql = "
             CREATE TABLE IF NOT EXISTS student (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -31,11 +26,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $conn->exec($sql);
 
-        // Step 5: Check if the students already exist
         $checkQuery = "SELECT COUNT(*) FROM student WHERE name = 'Samy Dupré' AND birth_date = '2005-01-01'";
         $result = $conn->query($checkQuery)->fetchColumn();
 
-        // If the student doesn't exist, insert the data
         if ($result == 0) {
             $insertSql = "
                 INSERT INTO student (name, birth_date) VALUES
@@ -46,16 +39,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $conn->exec($insertSql);
         }
 
-        // Step 6: Save credentials in the session and redirect to students page
         $_SESSION['db_user'] = $db_user;
         $_SESSION['db_pass'] = $db_pass;
         
-        echo "<p>Base de données et table créées avec succès!</p>";
-        echo "<a href='students.php'>Voir les étudiants</a>";
+        echo "<div class='alert alert-success custom-alert' role='alert'>";
+        echo "<strong>Succès!</strong> La base de données et la table ont été créées avec succès.";
+        echo "</div>";
+
+        echo "<div class='text-center'>";
+        echo "<a href='students.php' class='btn btn-primary custom-btn'>Voir les étudiants</a>";
+        echo "</div>";
         
     } catch (PDOException $e) {
-        // Catch and display any errors that occur
         echo "Erreur : " . $e->getMessage();
     }
 }
 ?>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f8f9fa;
+        margin-top: 50px;
+    }
+
+    .custom-alert {
+        background-color: #28a745; /* Green */
+        color: white;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .custom-btn {
+        background-color: #007bff;
+        color: white;
+        font-size: 16px;
+        padding: 10px 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .custom-btn:hover {
+        background-color: #0056b3;
+        text-decoration: none;
+    }
+
+    .text-center {
+        margin-top: 30px;
+    }
+</style>
