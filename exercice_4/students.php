@@ -1,25 +1,16 @@
 <?php
-session_start();
-
-// Check if the user is logged in and credentials exist in session
-if (!isset($_SESSION['db_user']) || !isset($_SESSION['db_pass'])) {
-    die("Veuillez vous connecter pour configurer la base de données.");
-}
-
+session_start(); // Start session to fetch credentials
 require_once 'connexion.php';
 
-try {
-    $db = ConnexionBD::getInstance(); // Get the database connection
-    
-    // Fetch all students from the database
-    $query = $db->query("SELECT * FROM student");
-    
-    // Fetch all results as objects
-    $results = $query->fetchAll(PDO::FETCH_OBJ);
-} catch (Exception $e) {
-    echo "Erreur: " . $e->getMessage();
-    exit;
-}
+$db_user = $_SESSION['db_user'];
+$db_pass = $_SESSION['db_pass'];
+
+// Get the database connection instance using the credentials stored in session
+$db = ConnexionBD::getInstance($db_user, $db_pass);
+
+// Fetch student data
+$query = $db->query("SELECT * FROM student");
+$results = $query->fetchAll(PDO::FETCH_OBJ);
 ?>
 
 <!DOCTYPE html>
@@ -35,11 +26,12 @@ try {
     <h1 class="text-center mb-4">Liste des Étudiants</h1>
     <?php if ($results): ?>
         <table class="table table-bordered">
-            <thead class="thead-dark">
+            <thead>
                 <tr>
                     <th>ID</th>
                     <th>Nom</th>
                     <th>Date de Naissance</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -48,6 +40,7 @@ try {
                         <td><?php echo htmlspecialchars($student->id); ?></td>
                         <td><?php echo htmlspecialchars($student->name); ?></td>
                         <td><?php echo htmlspecialchars($student->birth_date); ?></td>
+                        <td><a href="detailEtudiant.php?id=<?php echo $student->id; ?>" class="btn btn-info">Détails</a></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

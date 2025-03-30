@@ -9,10 +9,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         $conn = new PDO("mysql:host=$db_host", $db_user, $db_pass);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Set error mode to exceptions
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
 
         $sql = "CREATE DATABASE IF NOT EXISTS $db_name";
-        $conn->exec($sql); // Execute the query
+        $conn->exec($sql); 
 
         $conn->exec("USE $db_name");
 
