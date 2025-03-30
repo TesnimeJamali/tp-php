@@ -51,15 +51,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ?>
 
     <form action="login.php" method="POST">
-        <label for="username">Username:</label>
+        <label for="username">Nom d'utilisateur:</label>
         <input type="text" id="username" name="username" required><br><br>
         
-        <label for="password">Password:</label>
+        <label for="password">Mot de passe:</label>
         <input type="password" id="password" name="password" required><br><br>
         
         <input type="submit" value="Login">
     </form>
     <br>
-    <a href="register.php"><button>Register</button></a>
+    <a href="register.php"><button>S'inscrire</button></a>
 </body>
 </html>
