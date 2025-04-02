@@ -3,10 +3,7 @@
 session_start();
 include('db.php');  // Database connection
 include('studentclass.php');  // Section class
-if ($_SESSION['role']=='user') {
-    header('Location: login.php');
-    exit();
-}
+include('isAuthenticated.php'); // Vérification de l'authentification de l'utilisateur
 // Create Section object
 $studentObj = new Student($conn);
 

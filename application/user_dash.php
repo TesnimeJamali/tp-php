@@ -1,7 +1,7 @@
 <?php
 session_start();
-include('isAuthenticated.php'); // Vérification de l'authentification de l'utilisateur
 include('db.php'); // Connexion à la base de données
+include('isAuthenticated.php'); // Vérification de l'authentification de l'utilisateur
 echo $_SESSION['user'];
 
 try {
@@ -69,7 +69,7 @@ try {
     </tr>
     <?php endforeach; ?>
 </table>
-<a href="logout.php"><button>Logout</button></a>
+<a href="logout.php"><button>Déconnecter</button></a>
 
 </body>
 </html>
