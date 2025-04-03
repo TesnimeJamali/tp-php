@@ -250,7 +250,7 @@ try {
             <a class="nav-link" href="usersection.php" aria-current="page">Sections</a>
         </li>
         <li class="nav-item mx-2">
-            <a class="nav-link" href="logout.php" aria-current="page">Logout</a>
+            <a class="nav-link" href="logout.php" aria-current="page">Se Déconnecter</a>
         </li>
     </ul>
 </header>
@@ -273,9 +273,10 @@ try {
 </button>
     </div>
 
-    <form role="search" method="get">
-        <input class="form-control" type="search" placeholder="Rechercher par nom" aria-label="Search" name="search" value="<?= htmlspecialchars($searchTerm) ?>" style=" margin-top: 20px;">
-    </form>
+    <form method="get" action="admin_dash.php">
+    <input class="form-control" type="search" name="search" placeholder="Rechercher par nom" value="<?= htmlspecialchars($searchTerm) ?>" required>
+    <button type="submit" class="btn btn-primary mt-2">Rechercher</button>
+</form>
 
 
 

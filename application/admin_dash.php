@@ -2,18 +2,15 @@
 session_start();
 include('db.php');
 include('isAuthenticated.php');
-if ($_SESSION['role']=='user') {
+if ($_SESSION['role'] == 'user') {
     header('Location: login.php');
     exit();
 }
 require 'vendor/autoload.php';
-
-
 $searchTerm = '';
 if (isset($_GET['search'])) {
-    $searchTerm = trim($_GET['search']);
+    $searchTerm = $_GET['search'];
 }
-
 
 $filterSection = '';
 if (isset($_GET['filter_section'])) {
@@ -21,33 +18,36 @@ if (isset($_GET['filter_section'])) {
 }
 
 try {
-   
+    // Start building the query
     $sql = "SELECT * FROM etudiant";
     $conditions = [];
     $params = [];
 
+    // If there is a search term, add it to the conditions
     if (!empty($searchTerm)) {
-        $conditions[] = "name LIKE :searchTerm";
-        $params[':searchTerm'] = '%' . $searchTerm . '%';
+        // Ensure the search is case-insensitive and works for multi-word names
+        $conditions[] = "LOWER(name) LIKE LOWER(:searchTerm)";  // Case-insensitive search
+        $params[':searchTerm'] = '%' . strtolower($searchTerm) . '%';  // Add % for partial matches
     }
 
+    // If a section filter is set, add it to the conditions
     if (!empty($filterSection)) {
         $conditions[] = "section = :filterSection";
-        $params[':filterSection'] = $filterSection;
+        $params[':filterSection'] = $filterSection; // Ensure section is sanitized
     }
 
+    // If we have conditions, append them to the SQL query
     if (!empty($conditions)) {
         $sql .= " WHERE " . implode(' AND ', $conditions);
     }
 
+    // Prepare and execute the query
     $stmt = $conn->prepare($sql);
     $stmt->execute($params);
     $etudiants = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die("Erreur : " . $e->getMessage());
 }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -254,7 +254,7 @@ try {
             <a class="nav-link" href="section.php" aria-current="page">Sections</a>
         </li>
         <li class="nav-item mx-2">
-            <a class="nav-link" href="logout.php" aria-current="page">Logout</a>
+            <a class="nav-link" href="logout.php" aria-current="page">Se Déconnecter</a>
         </li>
     </ul>
 </header>
@@ -269,86 +269,72 @@ try {
 </button>
 
 <button class="btn btn-color-2" onclick="location.href='generate_files.php?type=csv';" >
-    CSV
+CSV
 </button>
 
 <button class="btn btn-color-2" onclick="location.href='generate_files.php?type=pdf';" >
-    PDF
+PDF
 </button>
-    </div>
-
-    <form role="search" method="get">
-        <input class="form-control" type="search" placeholder="Rechercher par nom" aria-label="Search" name="search" value="<?= htmlspecialchars($searchTerm) ?>" style=" margin-top: 20px;">
-    </form>
-
-
-
-    <div class="mb-3">
-    <form method="get">
-        <label for="filter_section" class="form-label">Filtrer par section :</label>
-        <select class="form-select" id="filter_section" name="filter_section">
-            <option value="">Toutes les sections</option>
-            <?php
-            try {
-                $stmt_sections = $conn->prepare("SELECT DISTINCT section FROM etudiant ORDER BY section");
-                $stmt_sections->execute();
-                $sections = $stmt_sections->fetchAll(PDO::FETCH_COLUMN);
-                foreach ($sections as $section_name):
-                    $selected = (isset($_GET['filter_section']) && $_GET['filter_section'] === $section_name) ? 'selected' : '';
-                    echo '<option value="' . htmlspecialchars($section_name) . '" ' . $selected . '>' . htmlspecialchars($section_name) . '</option>';
-                endforeach;
-            } catch (PDOException $e) {
-                echo '<option value="" disabled>Erreur lors de la récupération des sections</option>';
-            }
-            ?>
-        </select>
-        <button type="submit" class="btn btn-primary mt-2">Filtrer</button>
-    </form>
 </div>
 
+<form method="get" action="admin_dash.php">
+    <input class="form-control" type="search" name="search" placeholder="Rechercher par nom" value="<?= htmlspecialchars($searchTerm) ?>" required>
+    <button type="submit" class="btn btn-primary mt-2">Rechercher</button>
+</form>
 
-
-
-
-
-    <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nom</th>
-                    <th>Date de naissance</th>
-                    <th>Image</th>
-                    <th>Section</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (empty($etudiants)): ?>
-                    <tr><td colspan="5" class="empty-message">Aucun étudiant trouvé.</td></tr>
-                <?php else: ?>
-                    <?php foreach ($etudiants as $etudiant): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($etudiant['id']) ?></td>
-                        <td><?= htmlspecialchars($etudiant['name']) ?></td>
-                        <td><?= htmlspecialchars($etudiant['birthday']) ?></td>
-                        <td>
-                            <?php if (!empty($etudiant['image'])): ?>
-                                <img src="<?= htmlspecialchars($etudiant['image']) ?>" alt="Photo" width="50">
-                            <?php else: ?>
-                                Aucun
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <a href="save.php?id=<?= htmlspecialchars($etudiant['section']) ?>">
-                                <?= htmlspecialchars($etudiant['section']) ?>
-                            </a>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
-
-
+    <div class="mb-3">
+        <form method="get" action="admin_dash.php">
+            <label for="filter_section" class="form-label">Filtrer par section :</label>
+            <select class="form-select" id="filter_section" name="filter_section">
+                <option value="">Toutes les sections</option>
+                <?php
+                try {
+                    $stmt_sections = $conn->prepare("SELECT DISTINCT section FROM etudiant ORDER BY section");
+                    $stmt_sections->execute();
+                    $sections = $stmt_sections->fetchAll(PDO::FETCH_COLUMN);
+                    foreach ($sections as $section_name):
+                        $selected = (isset($_GET['filter_section']) && $_GET['filter_section'] === $section_name) ? 'selected' : '';
+                        echo '<option value="' . htmlspecialchars($section_name) . '" ' . $selected . '>' . htmlspecialchars($section_name) . '</option>';
+                    endforeach;
+                } catch (PDOException $e) {
+                    echo '<option value="" disabled>Erreur lors de la récupération des sections</option>';
+                }
+                ?>
+            </select>
+            <button type="submit" class="btn btn-primary mt-2">Filtrer</button>
+        </form>
     </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Date de naissance</th>
+                <th>Image</th>
+                <th>Section</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (empty($etudiants)): ?>
+                <tr><td colspan="6" class="empty-message">Aucun étudiant trouvé.</td></tr>
+            <?php else: ?>
+                <?php foreach ($etudiants as $etudiant): ?>
+                <tr>
+                    <td><?= htmlspecialchars($etudiant['id']) ?></td>
+                    <td><?= htmlspecialchars($etudiant['name']) ?></td>
+                    <td><?= htmlspecialchars($etudiant['birthday']) ?></td>
+                    <td><img src="<?= htmlspecialchars($etudiant['image']) ?>" alt="Image de <?= htmlspecialchars($etudiant['name']) ?>" class="img-thumbnail" style="width: 50px; height: 50px;"></td>
+                    <td><?= htmlspecialchars($etudiant['section']) ?></td>
+                    <td class="actions">
+                        <a href="edit_student.php?id=<?= $etudiant['id'] ?>" class="edit">Modifier</a>
+                        <a href="delete_student.php?id=<?= $etudiant['id'] ?>" class="delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?')">Supprimer</a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </tbody>
+    </table>
 </body>
 </html>

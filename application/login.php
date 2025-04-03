@@ -201,10 +201,10 @@ a button {
     margin-top: 5px;
 }
     </style>
-    <title>Login</title>
+    <title>Connexion</title>
 </head>
 <body>
-    <h2>Login</h2>
+    <h2>Connexion</h2>
 
     <?php
     if (isset($error)) {
@@ -213,13 +213,12 @@ a button {
     ?>
 
     <form action="login.php" method="POST">
-        <label for="username">User name:</label>
+        <label for="username">Nom d'utilisateur:</label>
         <input type="text" id="username" name="username" required><br><br>
 
-        <label for="password">Password:</label>
+        <label for="password">Mot de passe:</label>
         <input type="password" id="password" name="password" required><br><br>
-
-        <input type="submit" value="Login">
+        <input type="submit" value="Se connecter">
     </form>
     <br>
     <a href="register.php"><button>S'inscrire</button></a>

@@ -206,7 +206,7 @@ try {
             <a class="nav-link active" href="usersection.php" aria-current="page">Sections</a>
         </li>
         <li class="nav-item mx-2">
-            <a class="nav-link" href="logout.php" aria-current="page">Logout</a>
+            <a class="nav-link" href="logout.php" aria-current="page">Se Déconnecter</a>
         </li>
     </ul>
 </header>

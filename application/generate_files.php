@@ -24,8 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
                 $spreadsheet = new Spreadsheet();
                 $sheet = $spreadsheet->getActiveSheet();
-                $sheet->setCellValue('A1', 'Name');
-                $sheet->setCellValue('B1', 'Birthday');
+                $sheet->setCellValue('A1', 'Nom et Prénom');
+                $sheet->setCellValue('B1', 'Date de Naissance');
                 $sheet->setCellValue('C1', 'Image');
                 $sheet->setCellValue('D1', 'Section');
                 
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 header('Content-Type: text/csv');
                 header('Content-Disposition: attachment;filename="students.csv"');
                 $output = fopen('php://output', 'w');
-                fputcsv($output, ['Name', 'Birthday', 'Image', 'Section']);
+                fputcsv($output, ['Nom et Prénom', 'Date de Naissance', 'Image', 'Section']);
                 
                 foreach ($students as $student) {
                     fputcsv($output, [$student['name'], $student['birthday'], $student['image'], $student['section']]);
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
             case 'pdf':
                 // Generate PDF File
-                $html = '<h2>Students List</h2><table border="1" cellpadding="5"><tr><th>Name</th><th>Birthday</th><th>Image</th><th>Section</th></tr>';
+                $html = '<h2>Liste des Etudiants</h2><table border="1" cellpadding="5"><tr><th>Nom et Prenom</th><th>Date de Naissance</th><th>Image</th><th>Section</th></tr>';
                 foreach ($students as $student) {
                     $html .= '<tr>';
                     $html .= '<td>' . htmlspecialchars($student['name']) . '</td>';

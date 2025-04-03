@@ -212,7 +212,7 @@ try {
             <a class="nav-link" href="usersection.php" aria-current="page">Sections</a>
         </li>
         <li class="nav-item mx-2">
-            <a class="nav-link" href="logout.php" aria-current="page">Logout</a>
+            <a class="nav-link" href="logout.php" aria-current="page">Se Déconnecter</a>
         </li>
     </ul>
 </header>
@@ -234,9 +234,10 @@ try {
     PDF
 </button>
 
-            <form method="get" role="search" style="margin-top: 20px;">
-            <input class="form-control" type="search" placeholder="Search" aria-label="Search" name="search" value="<?= htmlspecialchars($searchTerm) ?>">
-          </form>
+<form method="get" action="admin_dash.php">
+    <input class="form-control" type="search" name="search" placeholder="Rechercher par nom" value="<?= htmlspecialchars($searchTerm) ?>" required>
+    <button type="submit" class="btn btn-primary mt-2">Rechercher</button>
+</form>
 
           <div class="mb-3">
     <form method="get">
