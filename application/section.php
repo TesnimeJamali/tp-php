@@ -1,19 +1,49 @@
 <?php
 session_start();
-include('db.php');  // Database connection
-include('sectionclass.php');  // Section class
-include('isAuthenticated.php'); // Vérification de l'authentification de l'utilisateur
+include('db.php');
+include('isAuthenticated.php');
 if ($_SESSION['role']=='user') {
     header('Location: login.php');
     exit();
 }
-// Create Section object
-$sectionObj = new Section($conn);
 
-// Fetch all sections
-$sections = $sectionObj->getAllSections();
+$searchTerm = '';
+if (isset($_GET['search'])) {
+    $searchTerm = trim($_GET['search']);
+}
+
+$filterDesignation = '';
+if (isset($_GET['filter_designation'])) {
+    $filterDesignation = trim($_GET['filter_designation']);
+}
+
+try {
+    $sql = "SELECT * FROM section";
+    $conditions = [];
+    $params = [];
+
+    if (!empty($searchTerm)) {
+        $conditions[] = "designation LIKE :searchTerm";
+        $params[':searchTerm'] = '%' . $searchTerm . '%';
+    }
+
+    if (!empty($filterDesignation)) {
+        $conditions[] = "designation = :filterDesignation";
+        $params[':filterDesignation'] = $filterDesignation;
+    }
+
+    if (!empty($conditions)) {
+        $sql .= " WHERE " . implode(' AND ', $conditions);
+    }
+
+    $stmt = $conn->prepare($sql);
+    $stmt->execute($params);
+    $sections = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Erreur : " . $e->getMessage());
+}
+
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -131,6 +161,34 @@ $sections = $sectionObj->getAllSections();
         .mt-3 {
             margin-top: 1.5rem;
         }
+        .btn-color-2 {
+    background-color: #007bff; /* Couleur de fond bleue, similaire à l'en-tête */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    margin-right: 10px;
+    text-decoration: none; /* Pour enlever le soulignement si vous utilisez des <a> au lieu de <button> */
+  }
+
+  .btn-color-2:hover {
+    background-color: #0056b3; /* Assombrir au survol */
+  }
+
+  /* Si vous voulez un style plus discret */
+  .btn-outline {
+    color: #007bff;
+    border: 1px solid #007bff;
+    background-color: transparent;
+  }
+
+  .btn-outline:hover {
+    background-color: #007bff;
+    color: white;
+  }
     </style>
 </head>
 <body>
@@ -146,6 +204,44 @@ $sections = $sectionObj->getAllSections();
                 <li class="nav-item"><a href="create_section.php" class="nav-link">Add section</a></li>
             </ul>
         </header>
+        <button class="btn btn-color-2" onclick="location.href='excel.xlsx';" download="excel.xlsx" >
+            excel
+        </button>
+
+        <button class="btn btn-color-2" onclick="location.href='excel.csv';" download="excel.csv" >
+            csv
+        </button>
+
+        <button class="btn btn-color-2" onclick="location.href='excel.pdf';" download="excel.pdf" >
+            PDF
+        </button>
+
+        <form method="get" role="search" style="margin-top: 20px;">
+            <input class="form-control" type="search" placeholder="Rechercher une section" aria-label="Search" name="search" value="<?= htmlspecialchars($searchTerm) ?>">
+        </form>
+
+        <div class="mb-3">
+            <form method="get">
+                <label for="filter_designation" class="form-label">Filtrer par désignation :</label>
+                <select class="form-select" id="filter_designation" name="filter_designation">
+                    <option value="">Toutes les désignations</option>
+                    <?php
+                    try {
+                        $stmt_designations = $conn->prepare("SELECT DISTINCT designation FROM section ORDER BY designation");
+                        $stmt_designations->execute();
+                        $designations = $stmt_designations->fetchAll(PDO::FETCH_COLUMN);
+                        foreach ($designations as $designation_name):
+                            $selected = (isset($_GET['filter_designation']) && $_GET['filter_designation'] === $designation_name) ? 'selected' : '';
+                            echo '<option value="' . htmlspecialchars($designation_name) . '" ' . $selected . '>' . htmlspecialchars($designation_name) . '</option>';
+                        endforeach;
+                    } catch (PDOException $e) {
+                        echo '<option value="" disabled>Erreur lors de la récupération des désignations</option>';
+                    }
+                    ?>
+                </select>
+                <button type="submit" class="btn btn-primary mt-2">Filtrer</button>
+            </form>
+        </div>
 
         <table class="table table-striped table-bordered">
             <thead>
@@ -157,21 +253,24 @@ $sections = $sectionObj->getAllSections();
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($sections as $section): ?>
+                <?php if (empty($sections)): ?>
+                    <tr><td colspan="4" class="text-center">Aucune section trouvée.</td></tr>
+                <?php else: ?>
+                    <?php foreach ($sections as $section): ?>
                     <tr>
                         <td><?= $section['id'] ?></td>
                         <td><?= htmlspecialchars($section['designation']) ?></td>
                         <td><?= htmlspecialchars($section['description']) ?></td>
                         <td>
-                            <a href="edit_section.php?id=<?= $section['id'] ?>" class="btn btn-primary btn-sm">Modify</a>
-                            <a href="delete_section.php?id=<?= $section['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cette section?')">Delete</a>
+                            <a href="edit_section.php?id=<?= $section['id'] ?>" class="btn btn-primary btn-sm">Modifier</a>
+                            <a href="delete_section.php?id=<?= $section['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cette section?')">Supprimer</a>
+                            <a href="students_by_section.php?section_id=<?= $section['id'] ?>" class="btn btn-info btn-sm">Voir les étudiants</a>
                         </td>
                     </tr>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
-
-       
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
