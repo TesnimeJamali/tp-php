@@ -6,6 +6,7 @@ if ($_SESSION['role']=='user') {
     header('Location: login.php');
     exit();
 }
+require 'vendor/autoload.php';
 
 
 $searchTerm = '';
@@ -237,21 +238,31 @@ try {
 </head>
 <body>
     <div class="container">
-        <h2>Liste des Étudiants</h2>
-        <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-            <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
-            <span class="fs-4" >Student Management System</span>
-        </a>
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+        <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
+        <span class="fs-4">Gestionnaire des étudiants</span>
+    </a>
+    <ul class="nav nav-pills">
+        <li class="nav-item mx-2">
+            <a class="nav-link active" href="admin_dash.php" aria-current="page">Accueil</a>
+        </li>
+        <li class="nav-item mx-2">
+            <a class="nav-link" href="student.php" aria-current="page">Etudiants</a>
+        </li>
+        <li class="nav-item mx-2">
+            <a class="nav-link" href="section.php" aria-current="page">Sections</a>
+        </li>
+        <li class="nav-item mx-2">
+            <a class="nav-link" href="logout.php" aria-current="page">Logout</a>
+        </li>
+    </ul>
+</header>
 
-        <ul class="nav nav-pills">
-            <li class="nav-item"><a href="logout.php" class="nav-link active" aria-current="page">logout</a></li>
-            <li class="nav-item"><a href="student.php" class="nav-link " >Edit students</a></li>
-            <li class="nav-item"><a href="section.php" class="nav-link " >Edit sections</a></li>
-
-
-        </ul>
-    </header>
+        <div class="container">
+        <h1 class="my-5">Bienvenue, Nous sommes ravis de vous voir sur notre plateforme.</h1>
+    </div>
+    <br>
     <div class="export-buttons">
     <button class="btn btn-color-2" onclick="location.href='generate_files.php?type=excel';" >
     Excel

@@ -1,20 +1,15 @@
 <?php
 session_start();
 include('db.php');
-// include('isAuthenticated.php'); // You might not need this if you handle authentication here
-
-// Check if the user is logged in and has the 'user' role
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
-    // If not logged in or not a 'user', redirect to login or another appropriate page
-    header('Location: login.php');
-    exit();
-}
+include('isAuthenticated.php');
 require 'vendor/autoload.php';
+
 
 $searchTerm = '';
 if (isset($_GET['search'])) {
     $searchTerm = trim($_GET['search']);
 }
+
 
 $filterSection = '';
 if (isset($_GET['filter_section'])) {
@@ -22,6 +17,7 @@ if (isset($_GET['filter_section'])) {
 }
 
 try {
+   
     $sql = "SELECT * FROM etudiant";
     $conditions = [];
     $params = [];
@@ -46,14 +42,17 @@ try {
 } catch (PDOException $e) {
     die("Erreur : " . $e->getMessage());
 }
+
+
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des Étudiants</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Liste des Étudiants</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -197,7 +196,12 @@ try {
             font-size: 1.5rem;
             font-weight: bold;
             color: #007bff;
+            margin: top 20px;
         }
+        .export-buttons {
+            margin-bottom: 20px;
+        }
+
         .btn-color-2 {
             background-color: #007bff; /* Couleur de fond bleue, similaire à l'en-tête */
             color: white;
@@ -229,19 +233,33 @@ try {
     </style>
 </head>
 <body>
+    <div class="container">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+        <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
+        <span class="fs-4">Gestionnaire des étudiants</span>
+    </a>
+    <ul class="nav nav-pills">
+        <li class="nav-item mx-2">
+            <a class="nav-link active" href="user_dash.php" aria-current="page">Accueil</a>
+        </li>
+        <li class="nav-item mx-2">
+            <a class="nav-link" href="userstudent.php" aria-current="page">Etudiants</a>
+        </li>
+        <li class="nav-item mx-2">
+            <a class="nav-link" href="usersection.php" aria-current="page">Sections</a>
+        </li>
+        <li class="nav-item mx-2">
+            <a class="nav-link" href="logout.php" aria-current="page">Logout</a>
+        </li>
+    </ul>
+</header>
 
-<h2>Liste des Étudiants</h2>
-<header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-            <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
-            <span class="fs-4" >Student Management System</span>
-        </a>
-
-        <ul class="nav nav-pills">
-            <li class="nav-item"><a href="logout.php" class="nav-link active" aria-current="page">logout</a></li>
-        </ul>
-    </header>
-
+        <div class="container">
+        <h1 class="my-5">Bienvenue, Nous sommes ravis de vous voir sur notre plateforme.</h1>
+    </div>
+    <br>
+    <div class="export-buttons">
     <button class="btn btn-color-2" onclick="location.href='generate_files.php?type=excel';" >
     Excel
 </button>
@@ -253,12 +271,15 @@ try {
 <button class="btn btn-color-2" onclick="location.href='generate_files.php?type=pdf';" >
     PDF
 </button>
+    </div>
 
-    <form method="get" role="search" style="margin-top: 20px;">
-        <input class="form-control" type="search" placeholder="Search" aria-label="Search" name="search" value="<?= htmlspecialchars($searchTerm) ?>">
+    <form role="search" method="get">
+        <input class="form-control" type="search" placeholder="Rechercher par nom" aria-label="Search" name="search" value="<?= htmlspecialchars($searchTerm) ?>" style=" margin-top: 20px;">
     </form>
 
-        <div class="mb-3">
+
+
+    <div class="mb-3">
     <form method="get">
         <label for="filter_section" class="form-label">Filtrer par section :</label>
         <select class="form-select" id="filter_section" name="filter_section">
@@ -281,34 +302,47 @@ try {
     </form>
 </div>
 
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Nom</th>
-        <th>Date de naissance</th>
-        <th>Image</th>
-        <th>Section</th>
-    </tr>
-    <?php if (empty($etudiants)): ?>
-        <tr><td colspan="5" class="empty-message">Aucun étudiant trouvé.</td></tr>
-    <?php else: ?>
-        <?php foreach ($etudiants as $etudiant): ?>
-        <tr>
-            <td><?= htmlspecialchars($etudiant['id']) ?></td>
-            <td><?= htmlspecialchars($etudiant['name']) ?></td>
-            <td><?= htmlspecialchars($etudiant['birthday']) ?></td>
-            <td>
-                <?php if (!empty($etudiant['image'])): ?>
-                    <img src="uploads/<?= htmlspecialchars($etudiant['image']) ?>" alt="Photo" style="max-width: 50px; max-height: 50px;">
-                <?php else: ?>
-                    Aucun
-                <?php endif; ?>
-            </td>
-            <td><?= htmlspecialchars($etudiant['section']) ?></td>
-        </tr>
-        <?php endforeach; ?>
-    <?php endif; ?>
-</table>
 
+
+
+
+
+    <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Date de naissance</th>
+                    <th>Image</th>
+                    <th>Section</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($etudiants)): ?>
+                    <tr><td colspan="5" class="empty-message">Aucun étudiant trouvé.</td></tr>
+                <?php else: ?>
+                    <?php foreach ($etudiants as $etudiant): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($etudiant['id']) ?></td>
+                        <td><?= htmlspecialchars($etudiant['name']) ?></td>
+                        <td><?= htmlspecialchars($etudiant['birthday']) ?></td>
+                        <td>
+                            <?php if (!empty($etudiant['image'])): ?>
+                                <img src="<?= htmlspecialchars($etudiant['image']) ?>" alt="Photo" width="50">
+                            <?php else: ?>
+                                Aucun
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <a href="save.php?id=<?= htmlspecialchars($etudiant['section']) ?>">
+                                <?= htmlspecialchars($etudiant['section']) ?>
+                            </a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

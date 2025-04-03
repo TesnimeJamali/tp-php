@@ -194,21 +194,33 @@ try {
 </head>
 <body>
     <div class="container">
-        <h2>Liste des Sections</h2>
-        <header class="header-container">
-            <a href="/" class="d-flex align-items-center link-body-emphasis text-decoration-none">
-                <span class="fs-4">Student Management System</span>
-            </a>
+        <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+        <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
+        <span class="fs-4">Gestionnaire des étudiants</span>
+    </a>
+    <ul class="nav nav-pills">
+        <li class="nav-item mx-2">
+            <a class="nav-link" href="admin_dash.php" aria-current="page">Accueil</a>
+        </li>
+        <li class="nav-item mx-2">
+            <a class="nav-link" href="student.php" aria-current="page">Etudiants</a>
+        </li>
+        <li class="nav-item mx-2">
+            <a class="nav-link active" href="section.php" aria-current="page">Sections</a>
+        </li>
+        <li class="nav-item mx-2">
+            <a class="nav-link" href="logout.php" aria-current="page">Logout</a>
+        </li>
+    </ul>
+</header>
+<h2>Liste des Sections</h2>
 
-            <ul class="nav nav-pills">
-                <li class="nav-item"><a href="logout.php" class="nav-link active" aria-current="page">Logout</a></li>
-                <li class="nav-item"><a href="create_section.php" class="nav-link">Add section</a></li>
-            </ul>
-        </header>
         <button class="btn btn-color-2" onclick="window.location.href='sections.php?export=csv'">Export CSV</button>
 <button class="btn btn-color-2" onclick="window.location.href='sections.php?export=xlsx'">Export XLSX</button>
 <button class="btn btn-color-2" onclick="window.location.href='sections.php?export=pdf'">Export PDF</button>
-
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+<button class="btn btn-color-2" onclick="location.href='create_section.php';">Ajouter Une Section</button>
 
         <form method="get" role="search" style="margin-top: 20px;">
             <input class="form-control" type="search" placeholder="Rechercher une section" aria-label="Search" name="search" value="<?= htmlspecialchars($searchTerm) ?>">

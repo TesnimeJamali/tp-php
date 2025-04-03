@@ -2,38 +2,31 @@
 session_start();
 include('db.php');
 include('isAuthenticated.php');
-if ($_SESSION['role']=='user') {
-    header('Location: login.php');
-    exit();
-}
 require 'vendor/autoload.php';
-
 
 $searchTerm = '';
 if (isset($_GET['search'])) {
     $searchTerm = trim($_GET['search']);
 }
 
-
-$filterSection = '';
-if (isset($_GET['filter_section'])) {
-    $filterSection = trim($_GET['filter_section']);
+$filterDesignation = '';
+if (isset($_GET['filter_designation'])) {
+    $filterDesignation = trim($_GET['filter_designation']);
 }
 
 try {
-
-    $sql = "SELECT * FROM etudiant";
+    $sql = "SELECT * FROM section";
     $conditions = [];
     $params = [];
 
     if (!empty($searchTerm)) {
-        $conditions[] = "name LIKE :searchTerm";
+        $conditions[] = "designation LIKE :searchTerm";
         $params[':searchTerm'] = '%' . $searchTerm . '%';
     }
 
-    if (!empty($filterSection)) {
-        $conditions[] = "section = :filterSection";
-        $params[':filterSection'] = $filterSection;
+    if (!empty($filterDesignation)) {
+        $conditions[] = "designation = :filterDesignation";
+        $params[':filterDesignation'] = $filterDesignation;
     }
 
     if (!empty($conditions)) {
@@ -42,21 +35,19 @@ try {
 
     $stmt = $conn->prepare($sql);
     $stmt->execute($params);
-    $etudiants = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $sections = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die("Erreur : " . $e->getMessage());
 }
 
-
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <title>Gestion des Etudiants</title>
+    <title>Gestion des Sections</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -198,123 +189,85 @@ try {
     </style>
 </head>
 <body>
-<div class="container">
-<header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+    <div class="container">
+        <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
     <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
         <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
         <span class="fs-4">Gestionnaire des étudiants</span>
     </a>
     <ul class="nav nav-pills">
         <li class="nav-item mx-2">
-            <a class="nav-link" href="admin_dash.php" aria-current="page">Accueil</a>
+            <a class="nav-link" href="user_dash.php" aria-current="page">Accueil</a>
         </li>
         <li class="nav-item mx-2">
-            <a class="nav-link active" href="student.php" aria-current="page">Etudiants</a>
+            <a class="nav-link" href="userstudent.php" aria-current="page">Etudiants</a>
         </li>
         <li class="nav-item mx-2">
-            <a class="nav-link" href="section.php" aria-current="page">Sections</a>
+            <a class="nav-link active" href="usersection.php" aria-current="page">Sections</a>
         </li>
         <li class="nav-item mx-2">
             <a class="nav-link" href="logout.php" aria-current="page">Logout</a>
         </li>
     </ul>
 </header>
+<h2>Liste des Sections</h2>
 
-    <div class="container">
-        <h2>Liste des Etudiants</h2>
-        <header class="header-container">
-            <a href="/" class="d-flex align-items-center link-body-emphasis text-decoration-none">
-                <span class="fs-4">Student Management System</span>
-            </a>
-
-            
-        </header>
-
-        
-        <button class="btn btn-color-2" onclick="location.href='generate_files.php?type=excel';" >
-    Excel
-</button>
-
-<button class="btn btn-color-2" onclick="location.href='generate_files.php?type=csv';" >
-    CSV
-</button>
-
-<button class="btn btn-color-2" onclick="location.href='generate_files.php?type=pdf';" >
-    PDF
-</button>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-
-<button class="btn btn-color-2" onclick="location.href='create_student.php';">Add Student</button>
+        <button class="btn btn-color-2" onclick="window.location.href='sections.php?export=csv'">Export CSV</button>
+<button class="btn btn-color-2" onclick="window.location.href='sections.php?export=xlsx'">Export XLSX</button>
+<button class="btn btn-color-2" onclick="window.location.href='sections.php?export=pdf'">Export PDF</button>
 
 
-            <form method="get" role="search" style="margin-top: 20px;">
-            <input class="form-control" type="search" placeholder="Search" aria-label="Search" name="search" value="<?= htmlspecialchars($searchTerm) ?>">
-          </form>
+        <form method="get" role="search" style="margin-top: 20px;">
+            <input class="form-control" type="search" placeholder="Rechercher une section" aria-label="Search" name="search" value="<?= htmlspecialchars($searchTerm) ?>">
+        </form>
 
-          <div class="mb-3">
-    <form method="get">
-        <label for="filter_section" class="form-label">Filtrer par section :</label>
-        <select class="form-select" id="filter_section" name="filter_section">
-            <option value="">Toutes les sections</option>
-            <?php
-            try {
-                $stmt_sections = $conn->prepare("SELECT DISTINCT section FROM etudiant ORDER BY section");
-                $stmt_sections->execute();
-                $sections = $stmt_sections->fetchAll(PDO::FETCH_COLUMN);
-                foreach ($sections as $section_name):
-                    $selected = (isset($_GET['filter_section']) && $_GET['filter_section'] === $section_name) ? 'selected' : '';
-                    echo '<option value="' . htmlspecialchars($section_name) . '" ' . $selected . '>' . htmlspecialchars($section_name) . '</option>';
-                endforeach;
-            } catch (PDOException $e) {
-                echo '<option value="" disabled>Erreur lors de la récupération des sections</option>';
-            }
-            ?>
-        </select>
-        <button type="submit" class="btn btn-primary mt-2">Filtrer</button>
-    </form>
-</div>
-
-
+        <div class="mb-3">
+            <form method="get">
+                <label for="filter_designation" class="form-label">Filtrer par désignation :</label>
+                <select class="form-select" id="filter_designation" name="filter_designation">
+                    <option value="">Toutes les désignations</option>
+                    <?php
+                    try {
+                        $stmt_designations = $conn->prepare("SELECT DISTINCT designation FROM section ORDER BY designation");
+                        $stmt_designations->execute();
+                        $designations = $stmt_designations->fetchAll(PDO::FETCH_COLUMN);
+                        foreach ($designations as $designation_name):
+                            $selected = (isset($_GET['filter_designation']) && $_GET['filter_designation'] === $designation_name) ? 'selected' : '';
+                            echo '<option value="' . htmlspecialchars($designation_name) . '" ' . $selected . '>' . htmlspecialchars($designation_name) . '</option>';
+                        endforeach;
+                    } catch (PDOException $e) {
+                        echo '<option value="" disabled>Erreur lors de la récupération des désignations</option>';
+                    }
+                    ?>
+                </select>
+                <button type="submit" class="btn btn-primary mt-2">Filtrer</button>
+            </form>
+        </div>
 
         <table class="table table-striped table-bordered">
             <thead>
                 <tr>
-                    <th>Nom</th>
-                    <th>Date de naissance</th>
-                    <th>Image</th>
-                    <th>Section</th>
-                    <th>Actions</th>
+                    <th>ID</th>
+                    <th>Désignation</th>
+                    <th>Description</th>
                 </tr>
             </thead>
             <tbody>
-                <?php if (empty($etudiants)): ?>
-                    <tr><td colspan="5" class="text-center">Aucun étudiant trouvé.</td></tr>
+                <?php if (empty($sections)): ?>
+                    <tr><td colspan="4" class="text-center">Aucune section trouvée.</td></tr>
                 <?php else: ?>
-                    <?php foreach ($etudiants as $student): ?>
+                    <?php foreach ($sections as $section): ?>
                     <tr>
-                        <td><?= htmlspecialchars($student['name']) ?></td>
-                        <td><?= htmlspecialchars($student['birthday']) ?></td>
-                        <td>
-                            <?php if (!empty($student['image'])): ?>
-                                <img src="<?= htmlspecialchars($student['image']) ?>" alt="Photo" width="50">
-                            <?php else: ?>
-                                Aucun
-                            <?php endif; ?>
-                        </td>
-                        <td><?= htmlspecialchars($student['section']) ?></td>
-                        <td>
-                            <a href="edit_student.php?id=<?= $student['id'] ?>" class="btn btn-primary btn-sm">Modify</a>
-                            <a href="delete_student.php?id=<?= $student['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cet etudiant?')">Delete</a>
-                        </td>
+                        <td><?= $section['id'] ?></td>
+                        <td><?= htmlspecialchars($section['designation']) ?></td>
+                        <td><?= htmlspecialchars($section['description']) ?></td>
                     </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
         </table>
-
-
     </div>
-    <br>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

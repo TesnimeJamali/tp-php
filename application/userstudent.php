@@ -2,10 +2,7 @@
 session_start();
 include('db.php');
 include('isAuthenticated.php');
-if ($_SESSION['role']=='user') {
-    header('Location: login.php');
-    exit();
-}
+
 require 'vendor/autoload.php';
 
 
@@ -206,13 +203,13 @@ try {
     </a>
     <ul class="nav nav-pills">
         <li class="nav-item mx-2">
-            <a class="nav-link" href="admin_dash.php" aria-current="page">Accueil</a>
+            <a class="nav-link" href="user_dash.php" aria-current="page">Accueil</a>
         </li>
         <li class="nav-item mx-2">
-            <a class="nav-link active" href="student.php" aria-current="page">Etudiants</a>
+            <a class="nav-link active" href="userstudent.php" aria-current="page">Etudiants</a>
         </li>
         <li class="nav-item mx-2">
-            <a class="nav-link" href="section.php" aria-current="page">Sections</a>
+            <a class="nav-link" href="usersection.php" aria-current="page">Sections</a>
         </li>
         <li class="nav-item mx-2">
             <a class="nav-link" href="logout.php" aria-current="page">Logout</a>
@@ -222,13 +219,7 @@ try {
 
     <div class="container">
         <h2>Liste des Etudiants</h2>
-        <header class="header-container">
-            <a href="/" class="d-flex align-items-center link-body-emphasis text-decoration-none">
-                <span class="fs-4">Student Management System</span>
-            </a>
-
-            
-        </header>
+        
 
         
         <button class="btn btn-color-2" onclick="location.href='generate_files.php?type=excel';" >
@@ -242,10 +233,6 @@ try {
 <button class="btn btn-color-2" onclick="location.href='generate_files.php?type=pdf';" >
     PDF
 </button>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-
-<button class="btn btn-color-2" onclick="location.href='create_student.php';">Add Student</button>
-
 
             <form method="get" role="search" style="margin-top: 20px;">
             <input class="form-control" type="search" placeholder="Search" aria-label="Search" name="search" value="<?= htmlspecialchars($searchTerm) ?>">
@@ -283,7 +270,6 @@ try {
                     <th>Date de naissance</th>
                     <th>Image</th>
                     <th>Section</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -302,10 +288,6 @@ try {
                             <?php endif; ?>
                         </td>
                         <td><?= htmlspecialchars($student['section']) ?></td>
-                        <td>
-                            <a href="edit_student.php?id=<?= $student['id'] ?>" class="btn btn-primary btn-sm">Modify</a>
-                            <a href="delete_student.php?id=<?= $student['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cet etudiant?')">Delete</a>
-                        </td>
                     </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -314,7 +296,6 @@ try {
 
 
     </div>
-    <br>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

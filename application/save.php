@@ -1,10 +1,7 @@
 <?php
 session_start();
 include('db.php'); // Connexion à la base de données
-if ($_SESSION['role']=='user') {
-    header('Location: login.php');
-    exit();
-}
+include('isAuthenticated.php'); // Vérification de l'authentification de l'utilisateur
 
 // Vérifier si l'ID de la section est passé en paramètre
 if (!isset($_GET['id']) || empty($_GET['id'])) {
@@ -81,7 +78,11 @@ try {
     <p><?= nl2br(htmlspecialchars($section['description'])) ?></p>
 
     <div class="back-link">
-        <a href="admin_dash.php">Retour à l'administration</a> <!-- Change en "user.php" si l'utilisateur est normal -->
+        <?php if ($_SESSION['role'] === 'user'): ?>
+            <a href="user_dash.php">Retour à l'espace utilisateur</a>
+        <?php else: ?>
+            <a href="admin_dash.php">Retour à l'administration</a>
+        <?php endif; ?>
     </div>
 </div>
 
