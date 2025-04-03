@@ -18,18 +18,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['user'] = $user['username'];
             $_SESSION['role'] = $user['role'];
 
+            echo "<script>console.log('Login successful for user: " . $_SESSION['user'] . ", Role: " . $_SESSION['role'] . "');</script>"; // Debugging
+
             if ($_SESSION['role'] == 'admin') {
+                echo "<script>console.log('Redirecting to admin_dash.php');</script>"; // Debugging
                 header("Location: admin_dash.php");
                 exit();
             } else {
+                echo "<script>console.log('Redirecting to user_dash.php');</script>"; // Debugging
                 header("Location: user_dash.php");
                 exit();
             }
         } else {
             $error = "Invalid username or password.";
+            echo "<script>console.log('Login failed for user: " . $username . "');</script>"; // Debugging
         }
     } catch (PDOException $e) {
         $error = "Error: " . $e->getMessage();
+        echo "<script>console.error('Database error: " . $error . "');</script>"; // Debugging
     }
 }
 ?>
@@ -51,7 +57,7 @@ h1 {
     color: #007bff;
     text-align: center;
 
-    
+
 }
 
 h2, h3 {
@@ -153,34 +159,34 @@ a button {
 
 
 input[type="submit"] {
-    background-color: #007bff; 
+    background-color: #007bff;
     color: white;
 }
 
 input[type="submit"]:hover {
-    background-color: #0056b3; 
+    background-color: #0056b3;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
 input[type="submit"]:focus {
     outline: none;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5); 
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
 }
 
 
 a button {
-    background-color: #28a745; 
+    background-color: #28a745;
     color: white;
 }
 
 a button:hover {
-    background-color: #1e7e34; 
+    background-color: #1e7e34;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
 a button:focus {
     outline: none;
-    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.5); 
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.5);
 }
 
 
@@ -209,13 +215,17 @@ a button {
     <form action="login.php" method="POST">
         <label for="username">User name:</label>
         <input type="text" id="username" name="username" required><br><br>
-        
+
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required><br><br>
-        
+
         <input type="submit" value="Login">
     </form>
     <br>
     <a href="register.php"><button>S'inscrire</button></a>
+
+    <script>
+        console.log('Page loaded.');
+    </script>
 </body>
 </html>
