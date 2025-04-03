@@ -1,60 +1,55 @@
 <?php
 session_start();
 include('db.php');
-include('isAuthenticated.php'); // Ensure the user is authenticated
+include('isAuthenticated.php');
 include('studentclass.php');
 include('sectionclass.php');
 $error = '';
 
-// Ensure the student ID is provided
 if (!isset($_GET['id'])) {
     die("ID de l'étudiant manquant !");
 }
 
 $studentId = $_GET['id'];
 $studentObj = new Student($conn);
-
-// Fetch the student by ID
 $student = $studentObj->getStudentById($studentId);
 
-// Check if the student exists
 if (!$student) {
     die("Étudiant non trouvé !");
 }
 
-// Fetch all sections
 $sectionObj = new Section($conn);
-$sections = $sectionObj->getAllSections(); // Assuming getAllSections() method exists
+$sections = $sectionObj->getAllSections();
 
-// Process the form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $birthday = $_POST['birthday'];
     $section = $_POST['section'];
-    
-    // Handle image upload (if provided)
-    $image = $student['image'];  // Default to the current image
+
+    $image = $student['image']; // Chemin de l'image actuelle par défaut
+
     if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
         $imageName = $_FILES['image']['name'];
         $imageTmp = $_FILES['image']['tmp_name'];
         $imageExt = pathinfo($imageName, PATHINFO_EXTENSION);
-        
-        // Validate file type (allow only images)
+
         $allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
         if (in_array(strtolower($imageExt), $allowedExts)) {
-            // Create a unique image name to avoid overwriting
-            $imagePath = 'uploads/' . uniqid() . '.' . $imageExt;
+            $uploadDir = 'uploads/'; // Répertoire pour stocker les images téléchargées
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true); // Créer le répertoire s'il n'existe pas
+            }
+            $imagePath = $uploadDir . uniqid() . '.' . $imageExt;
             move_uploaded_file($imageTmp, $imagePath);
-            $image = $imagePath;
+            $image = $imagePath; // Stocker le chemin complet dans la base de données
         } else {
             $error = "Format de fichier invalide. Seuls les fichiers image sont autorisés.";
         }
     }
 
-    // Update the student details
     if (empty($error)) {
         if ($studentObj->updateStudent($studentId, $name, $birthday, $section, $image)) {
-            header("Location: student.php");  // Redirect to admin dashboard after update
+            header("Location: student.php");
             exit();
         } else {
             $error = "Erreur lors de la mise à jour de l'étudiant.";
@@ -162,7 +157,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <h2>Modifier l'étudiant</h2>
 
-    <?php if ($error) { echo "<p style='color:red;'>$error</p>"; } ?>
+    <?php if ($error) { echo "<p class='error-message'>$error</p>"; } ?>
 
     <form action="edit_student.php?id=<?= $studentId ?>" method="POST" enctype="multipart/form-data">
         <div class="form-group">
@@ -190,14 +185,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="form-group">
             <?php if ($student['image']): ?>
                 <p>Image actuelle:</p>
-                <img src="<?= $student['image'] ?>" width="100" alt="Current Image"><br><br>
+                <img src="<?= htmlspecialchars($student['image']) ?>" width="100" alt="Current Image"><br><br>
             <?php endif; ?>
         </div>
-        <button type="submit" class="btn btn-primary">Ajouter l'étudiant</button>
-        </form>
+        <button type="submit" class="btn btn-primary">Mettre à jour l'étudiant</button>
+    </form>
     <br>
     <div class="mt-3">
-            <a href="admin_dash.php" class="btn btn-secondary">Retour à l'administration</a>
-        </div>
+        <a href="admin_dash.php" class="btn btn-secondary">Retour à l'administration</a>
+    </div>
 </body>
 </html>
