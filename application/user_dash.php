@@ -1,19 +1,51 @@
 <?php
 session_start();
-include('isAuthenticated.php'); // Vérification de l'authentification de l'utilisateur
-include('db.php'); // Connexion à la base de données
-echo $_SESSION['user'];
+include('db.php');
+// include('isAuthenticated.php'); // You might not need this if you handle authentication here
+
+// Check if the user is logged in and has the 'user' role
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
+    // If not logged in or not a 'user', redirect to login or another appropriate page
+    header('Location: login.php');
+    exit();
+}
+
+$searchTerm = '';
+if (isset($_GET['search'])) {
+    $searchTerm = trim($_GET['search']);
+}
+
+$filterSection = '';
+if (isset($_GET['filter_section'])) {
+    $filterSection = trim($_GET['filter_section']);
+}
 
 try {
-    // Récupérer tous les étudiants de la base de données
-    $stmt = $conn->prepare("SELECT * FROM etudiant");
-    $stmt->execute();
+    $sql = "SELECT * FROM etudiant";
+    $conditions = [];
+    $params = [];
+
+    if (!empty($searchTerm)) {
+        $conditions[] = "name LIKE :searchTerm";
+        $params[':searchTerm'] = '%' . $searchTerm . '%';
+    }
+
+    if (!empty($filterSection)) {
+        $conditions[] = "section = :filterSection";
+        $params[':filterSection'] = $filterSection;
+    }
+
+    if (!empty($conditions)) {
+        $sql .= " WHERE " . implode(' AND ', $conditions);
+    }
+
+    $stmt = $conn->prepare($sql);
+    $stmt->execute($params);
     $etudiants = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die("Erreur : " . $e->getMessage());
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -38,11 +70,11 @@ try {
         }
 
         .container {
-            max-width: 100%; 
-            margin: 0; 
+            max-width: 100%;
+            margin: 0;
             background-color: #fff;
             padding: 30px;
-            border-radius: 0; 
+            border-radius: 0;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
@@ -161,9 +193,37 @@ try {
             font-size: 1.1rem;
         }
         .fs-4 {
-    font-size: 1.5rem; 
-    font-weight: bold; 
-    color: #007bff; 
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .btn-color-2 {
+            background-color: #007bff; /* Couleur de fond bleue, similaire à l'en-tête */
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            margin-right: 10px;
+            text-decoration: none; /* Pour enlever le soulignement si vous utilisez des <a> au lieu de <button> */
+        }
+
+        .btn-color-2:hover {
+            background-color: #0056b3; /* Assombrir au survol */
+        }
+
+        /* Si vous voulez un style plus discret */
+        .btn-outline {
+            color: #007bff;
+            border: 1px solid #007bff;
+            background-color: transparent;
+        }
+
+        .btn-outline:hover {
+            background-color: #007bff;
+            color: white;
         }
     </style>
 </head>
@@ -171,15 +231,55 @@ try {
 
 <h2>Liste des Étudiants</h2>
 <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-        <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
-        <span class="fs-4" >Student Management System</span>
-      </a>
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+            <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
+            <span class="fs-4" >Student Management System</span>
+        </a>
 
-      <ul class="nav nav-pills">
-        <li class="nav-item"><a href="logout.php" class="nav-link active" aria-current="page">logout</a></li>
-      </ul>
+        <ul class="nav nav-pills">
+            <li class="nav-item"><a href="logout.php" class="nav-link active" aria-current="page">logout</a></li>
+        </ul>
     </header>
+
+    <button class="btn btn-color-2" onclick="location.href='excel.xlsx';" download="excel.xlsx" >
+                    excel
+                </button>
+
+                <button class="btn btn-color-2" onclick="location.href='excel.csv';" download="excel.csv" >
+                    csv
+                </button>
+
+                <button class="btn btn-color-2" onclick="location.href='excel.pdf';" download="excel.pdf" >
+                    PDF
+                </button>
+
+    <form method="get" role="search" style="margin-top: 20px;">
+        <input class="form-control" type="search" placeholder="Search" aria-label="Search" name="search" value="<?= htmlspecialchars($searchTerm) ?>">
+    </form>
+
+        <div class="mb-3">
+    <form method="get">
+        <label for="filter_section" class="form-label">Filtrer par section :</label>
+        <select class="form-select" id="filter_section" name="filter_section">
+            <option value="">Toutes les sections</option>
+            <?php
+            try {
+                $stmt_sections = $conn->prepare("SELECT DISTINCT section FROM etudiant ORDER BY section");
+                $stmt_sections->execute();
+                $sections = $stmt_sections->fetchAll(PDO::FETCH_COLUMN);
+                foreach ($sections as $section_name):
+                    $selected = (isset($_GET['filter_section']) && $_GET['filter_section'] === $section_name) ? 'selected' : '';
+                    echo '<option value="' . htmlspecialchars($section_name) . '" ' . $selected . '>' . htmlspecialchars($section_name) . '</option>';
+                endforeach;
+            } catch (PDOException $e) {
+                echo '<option value="" disabled>Erreur lors de la récupération des sections</option>';
+            }
+            ?>
+        </select>
+        <button type="submit" class="btn btn-primary mt-2">Filtrer</button>
+    </form>
+</div>
+
 <table>
     <tr>
         <th>ID</th>
@@ -188,24 +288,26 @@ try {
         <th>Image</th>
         <th>Section</th>
     </tr>
-    <?php foreach ($etudiants as $etudiant): ?>
-    <tr>
-        <td><?= htmlspecialchars($etudiant['id']) ?></td>
-        <td><?= htmlspecialchars($etudiant['name']) ?></td>
-        <td><?= htmlspecialchars($etudiant['birthday']) ?></td>
-        <td>
-            <?php if (!empty($etudiant['image'])): ?>
-                <img src="uploads/<?= htmlspecialchars($etudiant['image']) ?>" alt="Photo">
-            <?php else: ?>
-                Aucun
-            <?php endif; ?>
-        </td>
-        <td><?= htmlspecialchars($etudiant['section']) ?></td>
-
-    </tr>
-    <?php endforeach; ?>
+    <?php if (empty($etudiants)): ?>
+        <tr><td colspan="5" class="empty-message">Aucun étudiant trouvé.</td></tr>
+    <?php else: ?>
+        <?php foreach ($etudiants as $etudiant): ?>
+        <tr>
+            <td><?= htmlspecialchars($etudiant['id']) ?></td>
+            <td><?= htmlspecialchars($etudiant['name']) ?></td>
+            <td><?= htmlspecialchars($etudiant['birthday']) ?></td>
+            <td>
+                <?php if (!empty($etudiant['image'])): ?>
+                    <img src="uploads/<?= htmlspecialchars($etudiant['image']) ?>" alt="Photo" style="max-width: 50px; max-height: 50px;">
+                <?php else: ?>
+                    Aucun
+                <?php endif; ?>
+            </td>
+            <td><?= htmlspecialchars($etudiant['section']) ?></td>
+        </tr>
+        <?php endforeach; ?>
+    <?php endif; ?>
 </table>
-
 
 </body>
 </html>
