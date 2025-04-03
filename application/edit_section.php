@@ -130,6 +130,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </style>
 </head>
 <body>
+    
     <div class="container">
         <h2>Modifier la section</h2>
 
