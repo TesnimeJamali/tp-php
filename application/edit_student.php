@@ -1,51 +1,60 @@
 <?php
 session_start();
 include('db.php');
+include('isAuthenticated.php'); // Ensure the user is authenticated
 include('studentclass.php');
 include('sectionclass.php');
-if ($_SESSION['role']=='user') {
-    header('Location: login.php');
-    exit();
-}
 $error = '';
 
-
+// Ensure the student ID is provided
 if (!isset($_GET['id'])) {
     die("ID de l'étudiant manquant !");
 }
 
 $studentId = $_GET['id'];
 $studentObj = new Student($conn);
-$sectionObj = new Section($conn);
-$sections = $sectionObj->getAllSections();
 
-
+// Fetch the student by ID
 $student = $studentObj->getStudentById($studentId);
 
-
+// Check if the student exists
 if (!$student) {
     die("Étudiant non trouvé !");
 }
 
+// Fetch all sections
+$sectionObj = new Section($conn);
+$sections = $sectionObj->getAllSections(); // Assuming getAllSections() method exists
+
+// Process the form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $birthday = $_POST['birthday'];
     $section = $_POST['section'];
-
- 
-    $image = $student['image'];  
+    
+    // Handle image upload (if provided)
+    $image = $student['image'];  // Default to the current image
     if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
         $imageName = $_FILES['image']['name'];
         $imageTmp = $_FILES['image']['tmp_name'];
-        $imagePath = $imageName;
-        $image = $imageName;  
-
+        $imageExt = pathinfo($imageName, PATHINFO_EXTENSION);
+        
+        // Validate file type (allow only images)
+        $allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
+        if (in_array(strtolower($imageExt), $allowedExts)) {
+            // Create a unique image name to avoid overwriting
+            $imagePath = 'uploads/' . uniqid() . '.' . $imageExt;
+            move_uploaded_file($imageTmp, $imagePath);
+            $image = $imagePath;
+        } else {
+            $error = "Format de fichier invalide. Seuls les fichiers image sont autorisés.";
+        }
     }
 
-    
+    // Update the student details
     if (empty($error)) {
         if ($studentObj->updateStudent($studentId, $name, $birthday, $section, $image)) {
-            header("Location: student.php");  
+            header("Location: student.php");  // Redirect to admin dashboard after update
             exit();
         } else {
             $error = "Erreur lors de la mise à jour de l'étudiant.";
@@ -59,7 +68,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title>Modifier l'Étudiant</title>
     <style>
         body {
@@ -149,82 +157,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: red;
             margin-bottom: 15px;
         }
-
-        .current-image-container {
-            margin-bottom: 15px;
-            border: 1px solid #ced4da;
-            padding: 10px;
-            border-radius: 4px;
-            background-color: #f8f9fa;
-        }
-
-        .current-image-container p {
-            margin-top: 0;
-            font-weight: bold;
-        }
-
-        .current-image-container img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin-top: 5px;
-        }
     </style>
 </head>
-
 <body>
-    <div class="container">
-        <h2>Modifier l'étudiant</h2>
+    <h2>Modifier l'étudiant</h2>
 
-        <?php if ($error) { echo "<p class='error-message'>$error</p>"; } ?>
+    <?php if ($error) { echo "<p style='color:red;'>$error</p>"; } ?>
 
-        <form action="edit_student.php?id=<?= $studentId ?>" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="name">Nom:</label>
-                <input type="text" id="name" name="name" class="form-control" value="<?= htmlspecialchars($student['name']) ?>" required>
-            </div>
-
-            <div class="form-group">
-                <label for="birthday">Date de naissance:</label>
-                <input type="date" id="birthday" name="birthday" class="form-control" value="<?= htmlspecialchars($student['birthday']) ?>" required>
-            </div>
-
-            <div class="form-group">
-                <label for="section">Section:</label>
-                <select id="section" name="section" class="form-control" required>
-                    <?php
-                    if (isset($sections) && is_array($sections)):
-                        foreach ($sections as $section):
-                            $selected = ($student['section'] == $section['id']) ? 'selected' : '';
-                            echo '<option value="' . htmlspecialchars($section['id']) . '" ' . $selected . '>' . htmlspecialchars($section['designation']) . '</option>';
-                        endforeach;
-                    else:
-                        echo '<option value="" disabled>Aucune section disponible</option>';
-                    endif;
-                    ?>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="image">Image (facultatif):</label>
-                <input type="file" id="image" name="image" class="form-control">
-            </div>
-
+    <form action="edit_student.php?id=<?= $studentId ?>" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="name">Nom:</label>
+            <input type="text" id="name" name="name" value="<?= htmlspecialchars($student['name']) ?>" required><br><br>
+        </div>
+        <div class="form-group">
+            <label for="birthday">Date de naissance:</label>
+            <input type="date" id="birthday" name="birthday" value="<?= htmlspecialchars($student['birthday']) ?>" required><br><br>
+        </div>
+        <div class="form-group">
+            <label for="section">Section:</label>
+            <select id="section" name="section" required>
+                <?php foreach ($sections as $section): ?>
+                    <option value="<?= htmlspecialchars($section['designation']) ?>" <?= $section['designation'] == $student['section'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($section['designation']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select><br><br>
+        </div>
+        <div class="form-group">
+            <label for="image">Image (facultatif):</label>
+            <input type="file" id="image" name="image"><br><br>
+        </div>
+        <div class="form-group">
             <?php if ($student['image']): ?>
-                <div class="current-image-container">
-                    <p>Image actuelle:</p>
-                    <img src="<?=$student['image'] ?>" alt="Current Image">
-                </div>
+                <p>Image actuelle:</p>
+                <img src="<?= $student['image'] ?>" width="100" alt="Current Image"><br><br>
             <?php endif; ?>
-
-            <button type="submit" class="btn btn-primary">Mettre à jour l'étudiant</button>
+        </div>
+        <button type="submit" class="btn btn-primary">Ajouter l'étudiant</button>
         </form>
-
-        <div class="mt-3">
+    <br>
+    <div class="mt-3">
             <a href="admin_dash.php" class="btn btn-secondary">Retour à l'administration</a>
         </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -253,17 +253,17 @@ try {
         </ul>
     </header>
     <div class="export-buttons">
-        <button class="btn btn-color-2" onclick="location.href='excel.xlsx';" download="excel.xlsx" >
-                    excel
-                </button>
+    <button class="btn btn-color-2" onclick="location.href='generate_files.php?type=excel';" >
+    Excel
+</button>
 
-                <button class="btn btn-color-2" onclick="location.href='excel.csv';" download="excel.csv" >
-                    csv
-                </button>
+<button class="btn btn-color-2" onclick="location.href='generate_files.php?type=csv';" >
+    CSV
+</button>
 
-                <button class="btn btn-color-2" onclick="location.href='excel.pdf';" download="excel.pdf" >
-                    PDF
-                </button>
+<button class="btn btn-color-2" onclick="location.href='generate_files.php?type=pdf';" >
+    PDF
+</button>
     </div>
 
     <form role="search" method="get">

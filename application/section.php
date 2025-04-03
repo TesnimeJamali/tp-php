@@ -6,6 +6,7 @@ if ($_SESSION['role']=='user') {
     header('Location: login.php');
     exit();
 }
+require 'vendor/autoload.php';
 
 $searchTerm = '';
 if (isset($_GET['search'])) {
@@ -204,17 +205,10 @@ try {
                 <li class="nav-item"><a href="create_section.php" class="nav-link">Add section</a></li>
             </ul>
         </header>
-        <button class="btn btn-color-2" onclick="location.href='excel.xlsx';" download="excel.xlsx" >
-            excel
-        </button>
+        <button class="btn btn-color-2" onclick="window.location.href='sections.php?export=csv'">Export CSV</button>
+<button class="btn btn-color-2" onclick="window.location.href='sections.php?export=xlsx'">Export XLSX</button>
+<button class="btn btn-color-2" onclick="window.location.href='sections.php?export=pdf'">Export PDF</button>
 
-        <button class="btn btn-color-2" onclick="location.href='excel.csv';" download="excel.csv" >
-            csv
-        </button>
-
-        <button class="btn btn-color-2" onclick="location.href='excel.pdf';" download="excel.pdf" >
-            PDF
-        </button>
 
         <form method="get" role="search" style="margin-top: 20px;">
             <input class="form-control" type="search" placeholder="Rechercher une section" aria-label="Search" name="search" value="<?= htmlspecialchars($searchTerm) ?>">

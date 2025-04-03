@@ -211,18 +211,19 @@ try {
             </ul>
         </header>
 
+        
+        <button class="btn btn-color-2" onclick="location.href='generate_files.php?type=excel';" >
+    Excel
+</button>
 
-          <button class="btn btn-color-2" onclick="location.href='excel.xlsx';" download="excel.xlsx" >
-              excel
-            </button>
+<button class="btn btn-color-2" onclick="location.href='generate_files.php?type=csv';" >
+    CSV
+</button>
 
-            <button class="btn btn-color-2" onclick="location.href='excel.csv';" download="excel.csv" >
-              csv
-            </button>
+<button class="btn btn-color-2" onclick="location.href='generate_files.php?type=pdf';" >
+    PDF
+</button>
 
-            <button class="btn btn-color-2" onclick="location.href='excel.pdf';" download="excel.pdf" >
-              PDF
-            </button>
             <form method="get" role="search" style="margin-top: 20px;">
             <input class="form-control" type="search" placeholder="Search" aria-label="Search" name="search" value="<?= htmlspecialchars($searchTerm) ?>">
           </form>

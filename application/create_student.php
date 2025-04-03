@@ -137,45 +137,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <div class="container">
-        <h2>Ajouter un nouvel étudiant</h2>
+    <h2>Ajouter un nouvel étudiant</h2>
 
         <?php if ($error) { echo "<p class='error-message'>$error</p>"; } ?>
 
-        <form action="create_student.php" method="POST" enctype="multipart/form-data">
+    <form action="create_student.php" method="POST" enctype="multipart/form-data">
             <div class="form-group">
-                <label for="name">Nom:</label>
+        <label for="name">Nom:</label>
                 <input type="text" id="name" name="name" class="form-control" required>
             </div>
 
             <div class="form-group">
-                <label for="birthday">Date de naissance:</label>
+        <label for="birthday">Date de naissance:</label>
                 <input type="date" id="birthday" name="birthday" class="form-control" required>
             </div>
 
             <div class="form-group">
-                <label for="section">Section:</label>
+        <label for="section">Section:</label>
                 <select id="section" name="section" class="form-control" required>
-                    <?php
-                    // Assuming you have a Section class that handles section-related queries
+    <?php
+    // Assuming you have a Section class that handles section-related queries
                     if (isset($sections) && is_array($sections)):
-                        // Loop through the sections and create an option for each one
+    // Loop through the sections and create an option for each one
                         foreach ($sections as $section):
-                            echo '<option value="' . htmlspecialchars($section['id']) . '">' . htmlspecialchars($section['designation']) . '</option>';
+        echo '<option value="' . htmlspecialchars($section['designation']) . '">' . htmlspecialchars($section['designation']) . '</option>';
                         endforeach;
                     else:
                         echo '<option value="" disabled>Aucune section disponible</option>';
                     endif;
-                    ?>
+    ?>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="image">Image (facultatif):</label>
+        <label for="image">Image (facultatif):</label>
                 <input type="file" id="image" name="image" class="form-control">
             </div>
 
             <button type="submit" class="btn btn-primary">Ajouter l'étudiant</button>
-        </form>
+    </form>
 
         <div class="mt-3">
             <a href="admin_dash.php" class="btn btn-secondary">Retour à l'administration</a>
