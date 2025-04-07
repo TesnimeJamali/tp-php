@@ -234,7 +234,8 @@ try {
     PDF
 </button>
 
-<form method="get" action="admin_dash.php">
+<form method="get" action="userstudent.php">
+    <br>
     <input class="form-control" type="search" name="search" placeholder="Rechercher par nom" value="<?= htmlspecialchars($searchTerm) ?>" required>
     <button type="submit" class="btn btn-primary mt-2">Rechercher</button>
 </form>

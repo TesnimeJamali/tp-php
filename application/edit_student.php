@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $birthday = $_POST['birthday'];
     $section = $_POST['section'];
 
-    $image = $student['image']; // Chemin de l'image actuelle par défaut
+    $image = $student['image']; // Par défaut : image actuelle
 
     if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
         $imageName = $_FILES['image']['name'];
@@ -35,13 +35,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
         if (in_array(strtolower($imageExt), $allowedExts)) {
-            $uploadDir = 'uploads/'; // Répertoire pour stocker les images téléchargées
+            $uploadDir = 'uploads/';
             if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true); // Créer le répertoire s'il n'existe pas
+                mkdir($uploadDir, 0755, true);
             }
-            $imagePath = $uploadDir . uniqid() . '.' . $imageExt;
-            move_uploaded_file($imageTmp, $imagePath);
-            $image = $imagePath; // Stocker le chemin complet dans la base de données
+
+            $uniqueName = uniqid() . '.' . $imageExt;
+            $imagePath = $uploadDir . $uniqueName;
+
+            if (move_uploaded_file($imageTmp, $imagePath)) {
+                $image = $imagePath; // Met à jour l'image seulement si l'upload réussit
+            } else {
+                $error = "Erreur lors du téléchargement de l'image.";
+            }
         } else {
             $error = "Format de fichier invalide. Seuls les fichiers image sont autorisés.";
         }
@@ -112,14 +118,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-size: 1rem;
         }
 
-        select {
-            appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg fill="%23343a40" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M1.5 5.5a.5.5 0 0 1 .5-.5h12a.5.5 0 0 1 0 1H2a.5.5 0 0 1-.5-.5z"/><path d="M8 0a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V1a1 1 0 0 1 1-1z"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 16px 12px;
-        }
-
         .btn {
             display: inline-block;
             padding: 10px 20px;
@@ -157,16 +155,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <h2>Modifier l'étudiant</h2>
 
-    <?php if ($error) { echo "<p class='error-message'>$error</p>"; } ?>
+    <?php if ($error): ?>
+        <p class="error-message"><?= $error ?></p>
+    <?php endif; ?>
 
     <form action="edit_student.php?id=<?= $studentId ?>" method="POST" enctype="multipart/form-data">
         <div class="form-group">
             <label for="name">Nom:</label>
-            <input type="text" id="name" name="name" value="<?= htmlspecialchars($student['name']) ?>" required><br><br>
+            <input type="text" id="name" name="name" value="<?= htmlspecialchars($student['name']) ?>" required>
         </div>
         <div class="form-group">
             <label for="birthday">Date de naissance:</label>
-            <input type="date" id="birthday" name="birthday" value="<?= htmlspecialchars($student['birthday']) ?>" required><br><br>
+            <input type="date" id="birthday" name="birthday" value="<?= htmlspecialchars($student['birthday']) ?>" required>
         </div>
         <div class="form-group">
             <label for="section">Section:</label>
@@ -176,22 +176,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <?= htmlspecialchars($section['designation']) ?>
                     </option>
                 <?php endforeach; ?>
-            </select><br><br>
+            </select>
         </div>
         <div class="form-group">
             <label for="image">Image (facultatif):</label>
-            <input type="file" id="image" name="image"><br><br>
+            <input type="file" id="image" name="image">
         </div>
         <div class="form-group">
             <?php if ($student['image']): ?>
                 <p>Image actuelle:</p>
-                <img src="<?= htmlspecialchars($student['image']) ?>" width="100" alt="Current Image"><br><br>
+                <img src="/<?= htmlspecialchars($student['image']) ?>" width="100" alt="Image actuelle">
             <?php endif; ?>
         </div>
-        <button type="submit" class="btn btn-primary">Mettre à jour l'étudiant</button>
+        <button type="submit" class="btn">Mettre à jour l'étudiant</button>
     </form>
     <br>
-    <div class="mt-3">
+    <div>
         <a href="admin_dash.php" class="btn btn-secondary">Retour à l'administration</a>
     </div>
 </body>

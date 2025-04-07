@@ -239,7 +239,7 @@ try {
 <button class="btn btn-color-2" onclick="location.href='create_student.php';">Ajouter un étudiant</button>
 <br><br>
 
-<form method="get" action="admin_dash.php">
+<form method="get" action="student.php">
     <input class="form-control" type="search" name="search" placeholder="Rechercher par nom" value="<?= htmlspecialchars($searchTerm) ?>" required>
     <button type="submit" class="btn btn-primary mt-2">Rechercher</button>
 </form>
@@ -289,15 +289,16 @@ try {
                         <td><?= htmlspecialchars($student['birthday']) ?></td>
                         <td>
                             <?php if (!empty($student['image'])): ?>
-                                <img src="<?= htmlspecialchars($student['image']) ?>" alt="Photo" width="50">
+                                <img src="/<?= htmlspecialchars($student['image']) ?>" width="100" alt="Current Image">
+                                
                             <?php else: ?>
                                 Aucun
                             <?php endif; ?>
                         </td>
                         <td><?= htmlspecialchars($student['section']) ?></td>
                         <td>
-                            <a href="edit_student.php?id=<?= $student['id'] ?>" class="btn btn-primary btn-sm">Modify</a>
-                            <a href="delete_student.php?id=<?= $student['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cet etudiant?')">Delete</a>
+                            <a href="edit_student.php?id=<?= $student['id'] ?>" class="btn btn-primary btn-sm">Modifier</a>
+                            <a href="delete_student.php?id=<?= $student['id'] ?>" class="btn btn-danger btn-sm">Supprimer</a>
                         </td>
                     </tr>
                     <?php endforeach; ?>

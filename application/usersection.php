@@ -215,34 +215,35 @@ try {
         <button class="btn btn-color-2" onclick="window.location.href='sections.php?export=csv'">Export CSV</button>
 <button class="btn btn-color-2" onclick="window.location.href='sections.php?export=xlsx'">Export XLSX</button>
 <button class="btn btn-color-2" onclick="window.location.href='sections.php?export=pdf'">Export PDF</button>
-
-
-        <form method="get" role="search" style="margin-top: 20px;">
+<form method="get" class="mb-4">
+    <br>
+    <div class="row g-3 align-items-center">
+        <div class="col-md-6">
             <input class="form-control" type="search" placeholder="Rechercher une section" aria-label="Search" name="search" value="<?= htmlspecialchars($searchTerm) ?>">
-        </form>
-
-        <div class="mb-3">
-            <form method="get">
-                <label for="filter_designation" class="form-label">Filtrer par désignation :</label>
-                <select class="form-select" id="filter_designation" name="filter_designation">
-                    <option value="">Toutes les désignations</option>
-                    <?php
-                    try {
-                        $stmt_designations = $conn->prepare("SELECT DISTINCT designation FROM section ORDER BY designation");
-                        $stmt_designations->execute();
-                        $designations = $stmt_designations->fetchAll(PDO::FETCH_COLUMN);
-                        foreach ($designations as $designation_name):
-                            $selected = (isset($_GET['filter_designation']) && $_GET['filter_designation'] === $designation_name) ? 'selected' : '';
-                            echo '<option value="' . htmlspecialchars($designation_name) . '" ' . $selected . '>' . htmlspecialchars($designation_name) . '</option>';
-                        endforeach;
-                    } catch (PDOException $e) {
-                        echo '<option value="" disabled>Erreur lors de la récupération des désignations</option>';
-                    }
-                    ?>
-                </select>
-                <button type="submit" class="btn btn-primary mt-2">Filtrer</button>
-            </form>
         </div>
+        <div class="col-md-4">
+            <select class="form-select" id="filter_designation" name="filter_designation">
+                <option value="">Toutes les désignations</option>
+                <?php
+                try {
+                    $stmt_designations = $conn->prepare("SELECT DISTINCT designation FROM section ORDER BY designation");
+                    $stmt_designations->execute();
+                    $designations = $stmt_designations->fetchAll(PDO::FETCH_COLUMN);
+                    foreach ($designations as $designation_name):
+                        $selected = ($filterDesignation === $designation_name) ? 'selected' : '';
+                        echo '<option value="' . htmlspecialchars($designation_name) . '" ' . $selected . '>' . htmlspecialchars($designation_name) . '</option>';
+                    endforeach;
+                } catch (PDOException $e) {
+                    echo '<option value="" disabled>Erreur lors de la récupération</option>';
+                }
+                ?>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+        </div>
+    </div>
+</form>
 
         <table class="table table-striped table-bordered">
             <thead>

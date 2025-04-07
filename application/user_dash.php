@@ -273,7 +273,7 @@ try {
 </button>
     </div>
 
-    <form method="get" action="admin_dash.php">
+    <form method="get" action="user_dash.php">
     <input class="form-control" type="search" name="search" placeholder="Rechercher par nom" value="<?= htmlspecialchars($searchTerm) ?>" required>
     <button type="submit" class="btn btn-primary mt-2">Rechercher</button>
 </form>

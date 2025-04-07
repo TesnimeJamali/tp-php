@@ -127,7 +127,7 @@ try {
 <body>
     <div class="container">
         <h2>Étudiants de la section : <?= $sectionDesignation ?></h2>
-        <p><a href="section.php" class="btn btn-outline-primary btn-sm mb-3">Return</a></p>
+        <p><a href="section.php" class="btn btn-outline-primary btn-sm mb-3">Retourner</a></p>
 
         <?php if (empty($students)): ?>
             <p class="empty-message">Aucun étudiant inscrit dans cette section.</p>

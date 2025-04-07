@@ -1,39 +1,57 @@
 <?php
-
 session_start();
 include('db.php');
 include('studentclass.php');
 include('sectionclass.php');
-if ($_SESSION['role']=='user') {
+
+if ($_SESSION['role'] == 'user') {
     header('Location: login.php');
     exit();
 }
+
 $error = '';
-
-
 $studentObj = new Student($conn);
-$sectionObj = new Section($conn); 
+$sectionObj = new Section($conn);
 $sections = $sectionObj->getAllSections();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
     $name = $_POST['name'];
     $birthday = $_POST['birthday'];
     $section = $_POST['section'];
-    $image = null;  
+    $image = null;
 
     if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
         $imageName = $_FILES['image']['name'];
         $imageTmp = $_FILES['image']['tmp_name'];
-        $imagePath =$imageName;
-        $image = $imageName;  
+        $imageExt = pathinfo($imageName, PATHINFO_EXTENSION);
+
+        $allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
+        if (in_array(strtolower($imageExt), $allowedExts)) {
+            $uploadDir = 'uploads/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            $uniqueName = uniqid() . '.' . $imageExt;
+            $imagePath = $uploadDir . $uniqueName;
+
+            if (move_uploaded_file($imageTmp, $imagePath)) {
+                $image = $imagePath;
+            } else {
+                $error = "Erreur lors du téléchargement de l'image.";
+            }
+        } else {
+            $error = "Format de fichier invalide. Seuls les fichiers JPG, PNG ou GIF sont autorisés.";
+        }
     }
 
-    if ($studentObj->createStudent($name, $birthday, $image, $section)) {
-        header("Location: student.php");  
-        exit();
-    } else {
-        $error = "Erreur lors de l'ajout de l'étudiant.";
+    if (empty($error)) {
+        if ($studentObj->createStudent($name, $birthday, $image, $section)) {
+            header("Location: student.php");
+            exit();
+        } else {
+            $error = "Erreur lors de l'ajout de l'étudiant.";
+        }
     }
 }
 ?>
@@ -43,8 +61,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title>Ajouter un Étudiant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -79,26 +97,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-bottom: 5px;
             font-weight: bold;
             color: #495057;
-        }
-
-        input[type="text"],
-        input[type="date"],
-        input[type="file"],
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
-
-        select {
-            appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg fill="%23343a40" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M1.5 5.5a.5.5 0 0 1 .5-.5h12a.5.5 0 0 1 0 1H2a.5.5 0 0 1-.5-.5z"/><path d="M8 0a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V1a1 1 0 0 1 1-1z"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 16px 12px;
         }
 
         .btn {
@@ -136,52 +134,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </style>
 </head>
 <body>
-    <div class="container">
+<div class="container">
     <h2>Ajouter un nouvel étudiant</h2>
 
-        <?php if ($error) { echo "<p class='error-message'>$error</p>"; } ?>
+    <?php if ($error) { echo "<p class='error-message'>$error</p>"; } ?>
 
     <form action="create_student.php" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-        <label for="name">Nom:</label>
-                <input type="text" id="name" name="name" class="form-control" required>
-            </div>
+        <div class="form-group">
+            <label for="name">Nom:</label>
+            <input type="text" id="name" name="name" class="form-control" required>
+        </div>
 
-            <div class="form-group">
-        <label for="birthday">Date de naissance:</label>
-                <input type="date" id="birthday" name="birthday" class="form-control" required>
-            </div>
+        <div class="form-group">
+            <label for="birthday">Date de naissance:</label>
+            <input type="date" id="birthday" name="birthday" class="form-control" required>
+        </div>
 
-            <div class="form-group">
-        <label for="section">Section:</label>
-                <select id="section" name="section" class="form-control" required>
-    <?php
-    // Assuming you have a Section class that handles section-related queries
-                    if (isset($sections) && is_array($sections)):
-    // Loop through the sections and create an option for each one
-                        foreach ($sections as $section):
-        echo '<option value="' . htmlspecialchars($section['designation']) . '">' . htmlspecialchars($section['designation']) . '</option>';
-                        endforeach;
-                    else:
-                        echo '<option value="" disabled>Aucune section disponible</option>';
-                    endif;
-    ?>
-                </select>
-            </div>
+        <div class="form-group">
+            <label for="section">Section:</label>
+            <select id="section" name="section" class="form-control" required>
+                <?php
+                if (isset($sections) && is_array($sections)):
+                    foreach ($sections as $section):
+                        echo '<option value="' . htmlspecialchars($section['designation']) . '">' . htmlspecialchars($section['designation']) . '</option>';
+                    endforeach;
+                else:
+                    echo '<option value="" disabled>Aucune section disponible</option>';
+                endif;
+                ?>
+            </select>
+        </div>
 
-            <div class="form-group">
-        <label for="image">Image (facultatif):</label>
-                <input type="file" id="image" name="image" class="form-control">
-            </div>
+        <div class="form-group">
+            <label for="image">Image (facultatif):</label>
+            <input type="file" id="image" name="image" class="form-control">
+        </div>
 
-            <button type="submit" class="btn btn-primary">Ajouter l'étudiant</button>
+        <button type="submit" class="btn btn-primary">Ajouter l'étudiant</button>
     </form>
 
-        <div class="mt-3">
-            <a href="admin_dash.php" class="btn btn-secondary">Retour à l'administration</a>
-        </div>
+    <div class="mt-3">
+        <a href="admin_dash.php" class="btn btn-secondary">Retour à l'administration</a>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
