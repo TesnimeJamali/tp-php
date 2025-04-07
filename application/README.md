@@ -37,11 +37,13 @@ Dans le fichier db.php, vous devrez configurer vos informations de connexion à 
 Ouvrez db.php.
 Modifiez les variables suivantes avec vos propres informations :
 
+php
+Copy
+Edit
 $host = 'localhost';       // Hôte de la base de données (souvent localhost)
 $dbname = 'gestion_etudiants';  // Nom de votre base de données
 $username = 'root';        // Votre nom d'utilisateur MySQL
 $password = '';            // Votre mot de passe MySQL
-
 ### 4. Installer les dépendances PHP
 Si vous utilisez Composer, exécutez la commande suivante pour installer les dépendances :
 
