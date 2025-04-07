@@ -36,13 +36,6 @@ Importez le fichier SQL qui se trouve dans le projet pour créer les tables néc
 Dans le fichier db.php, vous devrez configurer vos informations de connexion à la base de données MySQL.
 Ouvrez db.php.
 Modifiez les variables suivantes avec vos propres informations :
-
-php
-Copy
-Edit
-$host = 'localhost';       // Hôte de la base de données (souvent localhost)
-$dbname = 'gestion_etudiants';  // Nom de votre base de données
-$username = 'root';        // Votre nom d'utilisateur MySQL
 $password = '';            // Votre mot de passe MySQL
 ### 4. Installer les dépendances PHP
 Si vous utilisez Composer, exécutez la commande suivante pour installer les dépendances :
