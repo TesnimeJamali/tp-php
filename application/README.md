@@ -28,7 +28,7 @@ Clonez ce projet en local :
 git clone <url-du-dépôt>
 cd <nom-du-dossier>
 2. Configurer la base de données
-Créez une base de données dans MySQL (par exemple : user_management).
+Créez une base de données dans MySQL (par exemple : gestion_etudiants).
 
 Importez le fichier SQL qui se trouve dans le projet pour créer les tables nécessaires.
 
@@ -39,27 +39,32 @@ Ouvrez db.php.
 
 Modifiez les variables suivantes avec vos propres informations :
 
+php
+Copy
+Edit
 $host = 'localhost';       // Hôte de la base de données (souvent localhost)
 $dbname = 'gestion_etudiants';  // Nom de votre base de données
 $username = 'root';        // Votre nom d'utilisateur MySQL
 $password = '';            // Votre mot de passe MySQL
-
 4. Installer les dépendances PHP
 Si vous utilisez Composer, exécutez la commande suivante pour installer les dépendances :
 
+bash
+Copy
+Edit
 composer install
 Cela installera les bibliothèques nécessaires à l'exécution du projet.
 
 Utilisation
 1. Accéder à l'application
-L'application est accessible via le serveur local. Vous pouvez y accéder en ouvrant votre navigateur et en allant à http://localhost
+L'application est accessible via le serveur local. Vous pouvez y accéder en ouvrant votre navigateur et en allant à http://localhost.
 
 2. Connexion et gestion des utilisateurs
 Administrateurs : Connectez-vous en utilisant un compte administrateur pour avoir accès aux fonctionnalités CRUD.
 
 Utilisateurs normaux : Ils peuvent uniquement visualiser les données et ne peuvent pas modifier les étudiants ou les sections.
 
-Nouveau_Utilisateur créez un nouveau compte en cliquant le bouton S'inscrire
+Nouveau utilisateur : Créez un nouveau compte en cliquant sur le bouton "S'inscrire".
 
 3. Exporter les données
 Vous pouvez exporter les données des sections au format CSV, XLSX ou PDF en cliquant sur les boutons d'exportation dans l'interface utilisateur.
@@ -85,11 +90,11 @@ Exporter en XLSX : Vous pouvez également exporter les données en format Excel 
 Exporter en PDF : Vous avez la possibilité d'exporter les données au format PDF.
 
 Aide et Support
-
 Si vous rencontrez des problèmes, vérifiez d'abord que vous avez bien configuré votre base de données et que vous avez correctement installé les dépendances.
 
 Si vous avez d'autres questions, n'hésitez pas à ouvrir une issue sur ce dépôt.
 
 Contributeurs
-[@TesnimeJamali](https://github.com/TesnimeJamali)
-[@MariemOuertani](https://github.com/mariemouertani104)
+@TesnimeJamali
+
+@MariemOuertani
