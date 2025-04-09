@@ -2,7 +2,7 @@
 // Database configuration
 $servername = "localhost"; // The hostname (usually localhost)
 $username = "root"; // Your MySQL username (usually root for XAMPP)
-$password = "Hippopotame$2014"; // Your MySQL password (if you have set one)
+$password = ""; // Your MySQL password (if you have set one)
 $dbname = "user_management"; // The name of your database
 
 try {
